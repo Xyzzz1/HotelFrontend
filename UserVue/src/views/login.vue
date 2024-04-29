@@ -3,8 +3,8 @@
         <el-container class="wrapper">
             <el-main class="section text-center">
                 <div class="login-bg"></div>
-                <el-card class="box-card login-card">
-                    <div class="text item">
+                <el-card class="login-card">
+                    <div class="item">
                         <img src="../assets/img/bupt.png" class="icon" style="width: 100px; height: 100px;">
                         <p class="login-title">
                             酒店用户登录
@@ -146,18 +146,12 @@ export default {
 .text {
     font-size: 14px;
 }
-
-.item {
-    /* padding: 18px 0; */
-}
-
 .login-card {
     margin: -7rem 3rem 1rem 3rem;
 }
 
 .login-title {
     font-size: 1.5rem;
-    
     margin-top: 1rem;
 }
 

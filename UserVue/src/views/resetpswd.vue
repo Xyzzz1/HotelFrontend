@@ -1,152 +1,167 @@
 <template>
-    <v-container>
-      <v-row class="text-center">
-        <v-col cols="12">
-          <v-img
-            :src="require('../assets/logo07.jpg')"
-            class="my-3"
-            contain
-            height="200"
-          />
-        </v-col>
-  
-        <v-col class="mb-4">
-          <h1 class="display-2 font-weight-bold mb-3">
-            Welcome to Vuetify
-          </h1>
-  
-          <p class="subheading font-weight-regular">
-            For help and collaboration with other Vuetify developers,
-            <br>please join our online
-            <a
-              href="https://community.vuetifyjs.com"
-              target="_blank"
-            >Discord Community</a>
-          </p>
-        </v-col>
-  
-        <v-col
-          class="mb-5"
-          cols="12"
-        >
-          <h2 class="headline font-weight-bold mb-3">
-            What's next?
-          </h2>
-  
-          <v-row justify="center">
-            <a
-              v-for="(next, i) in whatsNext"
-              :key="i"
-              :href="next.href"
-              class="subheading mx-3"
-              target="_blank"
-            >
-              {{ next.text }}
-            </a>
-          </v-row>
-        </v-col>
-  
-        <v-col
-          class="mb-5"
-          cols="12"
-        >
-          <h2 class="headline font-weight-bold mb-3">
-            Important Links
-          </h2>
-  
-          <v-row justify="center">
-            <a
-              v-for="(link, i) in importantLinks"
-              :key="i"
-              :href="link.href"
-              class="subheading mx-3"
-              target="_blank"
-            >
-              {{ link.text }}
-            </a>
-          </v-row>
-        </v-col>
-  
-        <v-col
-          class="mb-5"
-          cols="12"
-        >
-          <h2 class="headline font-weight-bold mb-3">
-            Ecosystem
-          </h2>
-  
-          <v-row justify="center">
-            <a
-              v-for="(eco, i) in ecosystem"
-              :key="i"
-              :href="eco.href"
-              class="subheading mx-3"
-              target="_blank"
-            >
-              {{ eco.text }}
-            </a>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-  </template>
-  
-  <script>
-    export default {
-      name: 'HelloWorld',
-  
-      data: () => ({
-        ecosystem: [
-          {
-            text: 'vuetify-loader',
-            href: 'https://github.com/vuetifyjs/vuetify-loader',
-          },
-          {
-            text: 'github',
-            href: 'https://github.com/vuetifyjs/vuetify',
-          },
-          {
-            text: 'awesome-vuetify',
-            href: 'https://github.com/vuetifyjs/awesome-vuetify',
-          },
-        ],
-        importantLinks: [
-          {
-            text: 'Documentation',
-            href: 'https://vuetifyjs.com',
-          },
-          {
-            text: 'Chat',
-            href: 'https://community.vuetifyjs.com',
-          },
-          {
-            text: 'Made with Vuetify',
-            href: 'https://madewithvuejs.com/vuetify',
-          },
-          {
-            text: 'Twitter',
-            href: 'https://twitter.com/vuetifyjs',
-          },
-          {
-            text: 'Articles',
-            href: 'https://medium.com/vuetify',
-          },
-        ],
-        whatsNext: [
-          {
-            text: 'Explore components',
-            href: 'https://vuetifyjs.com/components/api-explorer',
-          },
-          {
-            text: 'Select a layout',
-            href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
-          },
-          {
-            text: 'Frequently Asked Questions',
-            href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-          },
-        ],
-      }),
-    }
-  </script>
-  
+    <div>
+        <el-container class="wrapper">
+            <el-main class="section text-center">
+                <div class="resetpswd-bg"></div>
+                <el-card class="resetpswd-card">
+                    <div class="text">
+                        <div style="margin-bottom: 15px;"></div>
+                        <el-form :model="resetpswd" status-icon ref="resetpswd" label-width="80px">
+                            <el-input type="text" v-model="resetpswd.phone" autocomplete="off" placeholder="电话号码"
+                                style="width: 20rem;height: 3rem;"></el-input>
+                            <div style="margin-bottom: 10px;"></div>
+                            <el-input type="text" v-model="resetpswd.email" autocomplete="off" placeholder="密保邮箱"
+                                style="width: 20rem;height: 3rem;"></el-input>
+                            <div style="margin-bottom: 10px;"></div>
+                            <el-input type="password" v-model="resetpswd.password" autocomplete="off" placeholder="新密码"
+                                style="width: 20rem;height: 3rem;"></el-input>
+                            <div style="margin-bottom: 10px;"></div>
+                            <el-input type="password" v-model="resetpswd.reput_password" autocomplete="off"
+                                placeholder="确认密码" style="width: 20rem;height: 3rem;"></el-input>
+                        </el-form>
+                        <el-button :type="btnType" @click="resetBtn" class="resetbtn" :disabled="disabled"
+                            style="background-color: royalblue;">重置密码
+                        </el-button>
+                    </div>
+                </el-card>
+            </el-main>
+        </el-container>
+    </div>
+</template>
+
+
+<script>
+import store from "./../store";
+export default {
+    data() {
+        return {
+            resetpswd: {
+                phone: "",
+                email: "",
+                password: "",
+                reput_password: "",
+            },
+            disabled: false,
+            btnType: "primary",
+            passwordsMatch: false,
+        };
+    },
+    methods: {
+        resetBtn() {
+            if (
+                this.resetpswd.phone.trim() == "" ||
+                this.resetpswd.email.trim() == "" ||
+                this.resetpswd.password.trim() == "" ||
+                this.resetpswd.reput_password.trim() == ""
+            ) {
+                this.$message({
+                    message: "输入不能为空",
+                    type: "error",
+                });
+                return;
+            }
+
+            if(
+                this.resetpswd.password.trim() !=
+                this.resetpswd.reput_password.trim()
+            )
+            {
+                this.$message({
+                    message: "两次密码输入不相同",
+                    type: "error",
+                });
+                return;
+            }
+            this.disabled = true;
+
+            this.axios
+                .post("http://localhost:9151/user/resetpswd", {
+                    phone: this.resetpswd.phone,
+                    email: this.resetpswd.email,
+                    password: this.resetpswd.password,
+                })
+                .then((res) => {
+                    if (res.data.code == 200) {
+                        this.btnType = "success";
+                        this.$message({
+                            message: "重置成功，正在登陆",
+                            type: "success",
+                        });
+                        setTimeout(() => {
+                            this.disabled = false;
+                            this.$store.commit("setFind");
+                            this.$router.push("/findroom");
+                        }, 2000);
+                    } else {
+                        this.iconstyle = "el-icon-close";
+                        this.btnType = "danger";
+                        this.$message({
+                            message: "登录失败，电话与密保邮箱不匹配",
+                            type: "error",
+                        });
+                        setTimeout(() => {
+                            this.disabled = false;
+                            this.btnType = "primary";
+                        }, 2000);
+                    }
+                })
+                .catch((e) => {
+                    this.iconstyle = "el-icon-close";
+                    this.btnType = "danger";
+                    setTimeout(() => {
+                        this.disabled = false;
+                        this.iconstyle = "iconfont icon-r-right";
+                        this.btnType = "primary";
+                    }, 2000);
+
+                    if (e.response == undefined || e.response.data == undefined) {
+                        this.$message({
+                            showClose: true,
+                            message: e,
+                            type: "error",
+                            duration: 0,
+                        });
+                    } else {
+                        this.$message({
+                            showClose: true,
+                            message: e.response.data,
+                            type: "error",
+                            duration: 0,
+                        });
+                    }
+                });
+        },
+    },
+};
+</script>
+
+
+<style scoped="scoped">
+.resetpswd-bg {
+    height: 30vh;
+    background-size: 100%;
+    border: 0px solid transparent;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.wrapper {
+    width: 500px;
+    margin: 0 auto;
+    min-height: 90vh;
+}
+.resetpswd-card {
+    margin: -7rem 3rem 1rem 3rem;
+}
+
+.text {
+    font-size: 14px;
+}
+
+.resetbtn {
+    width: 20rem;
+    height: 2.5rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+</style>
