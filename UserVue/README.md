@@ -16,3 +16,8 @@ npm update
 
 # 启动项目
 npm run dev
+
+
+### 单元测试
+# 安装依赖
+npm install jest vue-jest babel-jest @vue/test-utils -D
