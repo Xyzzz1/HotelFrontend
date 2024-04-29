@@ -5,57 +5,32 @@
                 <div class="login-bg"></div>
                 <el-card class="box-card login-card">
                     <div class="text item">
+                        <img src="../assets/img/bupt.png" class="icon" style="width: 100px; height: 100px;">
                         <p class="login-title">
-                            <i
-                                class="iconfont icon-r-yes"
-                                style="font-size: 32px"
-                            ></i>
-                            酒店预订系统
+                            酒店用户登录
                         </p>
-                        <el-form
-                            :model="login"
-                            status-icon
-                            ref="login"
-                            label-width="80px"
-                        >
-                            <el-form-item label="账户邮箱" prop="email">
-                                <el-input
-                                    type="text"
-                                    v-model="login.email"
-                                    autocomplete="off"
-                                ></el-input>
-                            </el-form-item>
-                            <el-form-item label="密码" prop="pass">
-                                <el-input
-                                    type="password"
-                                    v-model="login.password"
-                                    autocomplete="off"
-                                ></el-input>
-                            </el-form-item>
+                        <el-form :model="login" status-icon ref="login" label-width="80px">
+                            <el-input type="text" v-model="login.phone" autocomplete="off" placeholder="电话号码"
+                                style="width: 20rem;height: 3rem;"></el-input>
+                            <div style="margin-bottom: 15px;"></div>
+                            <el-input type="password" v-model="login.password" autocomplete="off" placeholder="密码"
+                                style="width: 20rem;height: 3rem;"></el-input>
                         </el-form>
+                        <el-button :type="btnType" @click="loginBtn" class="loginbtn" :disabled="disabled"
+                            style="background-color: royalblue;">登陆
+                        </el-button>
+                    </div>
+                    <div class="register">
+                        <p>
+                            遇到问题?    
+                            <router-link to="/register" style="color: royalblue;">注册</router-link>
+                            或
+                            <router-link to="/resetpswd" style="color: royalblue;">重置密码</router-link>
+                        </p>
                     </div>
                 </el-card>
-                <el-button
-                    circle
-                    :type="btnType"
-                    @click="loginBtn"
-                    class="loginbtn"
-                    :disabled="disabled"
-                >
-                    <i :class="iconstyle" style="font-size: 54px"></i>
-                </el-button>
-                <div class="register">
-                    <p>
-                        <router-link to="/register" style="color: black"
-                            >注册账号</router-link
-                        >
-                    </p>
-                </div>
             </el-main>
         </el-container>
-        <el-footer class="footer text-center">
-            <copyright></copyright>
-        </el-footer>
     </div>
 </template>
 
@@ -66,7 +41,7 @@ export default {
     data() {
         return {
             login: {
-                email: "",
+                phone: "",
                 password: "",
             },
             iconstyle: "iconfont icon-r-right",
@@ -81,7 +56,7 @@ export default {
     methods: {
         loginBtn() {
             if (
-                this.login.email.trim() == "" ||
+                this.login.phone.trim() == "" ||
                 this.login.password.trim() == ""
             ) {
                 this.$message({
@@ -95,7 +70,7 @@ export default {
 
             this.axios
                 .post("http://localhost:9151/user/login", {
-                    email: this.login.email,
+                    phone: this.login.phone,
                     password: this.login.password,
                 })
                 .then((res) => {
@@ -161,7 +136,6 @@ export default {
 
 <style scoped="scoped">
 .login-bg {
-    background: rgb(65, 105, 225);
     height: 30vh;
     background-size: 100%;
     border: 0px solid transparent;
@@ -178,16 +152,18 @@ export default {
 }
 
 .login-card {
-    margin: -7rem 1rem 1rem 1rem;
+    margin: -7rem 3rem 1rem 3rem;
 }
 
 .login-title {
-    font-size: 2rem;
-    font-weight: lighter;
+    font-size: 1.5rem;
+    
     margin-top: 1rem;
 }
 
 .wrapper {
+    width: 500px;
+    margin: 0 auto;
     min-height: 90vh;
 }
 
@@ -200,22 +176,26 @@ export default {
 }
 
 .loginbtn {
-    width: 7rem;
-    height: 7rem;
-    font-size: 1.5rem;
-    margin-top: 2rem;
+    width: 20rem;
+    height: 2.5rem;
+    font-size: 1rem;
+    margin-top: 1rem;
 }
 
 .register {
     margin-top: 5vh;
 }
 
+.changepwd {
+    margin-top: 0vh;
+}
+
 .register a,
 .register div {
-    color: #409eff;
+    color: #fff;
 }
 
 .register p {
-    margin: 0.5rem;
+    margin: 1rem;
 }
 </style>

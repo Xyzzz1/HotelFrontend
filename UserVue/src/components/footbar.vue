@@ -79,7 +79,7 @@
 
 <style scoped="scoped">
   .el-row {
-    background-color: rgb(176, 196, 222);
+    background-color: #fff;
     min-height: 6vh;
     line-height: 6vh;
     color: #fff;

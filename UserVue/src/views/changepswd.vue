@@ -28,9 +28,6 @@
         </el-card>
       </el-main>
     </el-container>
-    <el-footer class="footer text-center">
-      <footbar></footbar>
-    </el-footer>
   </div>
 </template>
 
@@ -92,8 +89,7 @@
 
 <style scoped="scoped">
   .changepswd-bg {
-    background: rgb(65, 105, 225);
-    height: 20vh;
+    height: 30vh;
     background-size: 100%;
     border: 0px solid transparent;
     border-bottom-left-radius: 10px;

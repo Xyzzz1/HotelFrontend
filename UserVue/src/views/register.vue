@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="page-wrapper">
         <el-container class="wrapper">
             <el-main class="section text-center">
                 <div class="register-bg"></div>
@@ -62,16 +62,16 @@
                             @click="registerBtn('register')"
                             class="registerbtn"
                             :disabled="disabled"
-                        >
-                             注册账号
+                        >注册账号
                         </el-button>
                     </div>
                 </el-card>
 
                 <div class="register">
                     <p>
-                        <router-link to="/login" style="color: black"
-                            >已有账号？立即登录</router-link
+                        已有账号？
+                        <router-link to="/login" style="color: royalblue"
+                            >立即登录</router-link
                         >
                     </p>
                 </div>
@@ -218,8 +218,10 @@ export default {
 </script>
 
 <style scoped="scoped">
+page-wrapper {
+    background-color: #fff;
+}
 .register-bg {
-    background: rgb(65, 105, 225);
     height: 20vh;
     background-size: 100%;
     border: 0px solid transparent;

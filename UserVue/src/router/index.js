@@ -31,6 +31,14 @@ const routes = [
     }
   },
   {
+    path: "/resetpswd",
+    name: "resetpswd",
+    component: () => import('@/views/resetpswd.vue'),
+    meta: {
+      title: "酒店客房预订系统-重置密码"
+    }
+  },
+  {
     path: '/findroom',
     name: 'findroom',
     component: () => import('@/views/findroom.vue'),
