@@ -11,7 +11,8 @@ import VueAxios from 'vue-axios'
 import './plugins/element.js'
 import './plugins/initialize'
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+//import 'element-ui/lib/theme-chalk/index.css';
+import './assets/css/custom.css';
 import VueRouter from 'vue-router';
 import './assets/font2/iconfont.css'
 import VueWechatTitle from 'vue-wechat-title';
