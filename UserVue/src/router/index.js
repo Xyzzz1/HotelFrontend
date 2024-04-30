@@ -142,6 +142,48 @@ const routes = [
       title: "订单提交失败"
     },
   },
+  {
+    path: '/service',
+    name: 'service',
+    component: () => import('@/views/service.vue'),
+    meta:{
+      title: "酒店客房服务"
+    },
+    children:[
+      {
+        path: '/service/myroom',
+        name: 'myroom',
+        component: () => import('@/views/sub_item/myroom.vue'),
+        meta:{
+          title: "酒店客房服务-我的房间"
+        },
+      },
+      {
+        path: '/service/conditioner',
+        name: 'conditioner',
+        component: () => import('@/views/sub_item/conditioner.vue'),
+        meta:{
+          title: "酒店客房服务-空调遥控"
+        },
+      },
+      {
+        path: '/service/checkout',
+        name: 'checkout',
+        component: () => import('@/views/sub_item/checkout.vue'),
+        meta:{
+          title: "酒店客房服务-我要退房"
+        },
+      },
+      {
+        path: '/service/other',
+        name: 'other',
+        component: () => import('@/views/sub_item/other.vue'),
+        meta:{
+          title: "酒店客房服务-其他"
+        },
+      },
+    ]
+  },
 ];
 
 const router = new VueRouter({
