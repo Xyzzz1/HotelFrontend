@@ -44,7 +44,7 @@
                             </el-form-item>
 
                             <el-form-item label="价格">
-                                <span v-model="resinfo.type" class="room-price"
+                                <span v-model="resinfo.price" class="room-price"
                                     >{{ sumprice }} 元</span
                                 >
                             </el-form-item>
@@ -81,7 +81,6 @@
 </template>
 
 <script>
-import footbar from "@/components/footbar.vue";
 export default {
     data() {
         return {
@@ -90,6 +89,7 @@ export default {
             resinfo: {
                 num: "",
                 isNeedInvoice: false,
+                type:"",
             },
             price: 0,
             sumprice: 0,

@@ -3,66 +3,165 @@
 		<el-container class="wrapper">
 			<!-- <el-header class="header">找房</el-header> -->
 			<el-main class="section">
-				<div class="bg-header"></div>
-				<el-card class="box-card pb-1" style="opacity: 0.95;">
+				<div class="bg-header">
+					<router-link to="/about" class="nav-link">关于我们</router-link>
+					<router-link to="/contact" class="nav-link">联系我们</router-link>
+					<router-link to="/service" class="nav-link">房间服务</router-link>
+					<router-link to="/mine" class="nav-link">账号信息</router-link>
+				</div>
+				<el-card class="box-card" style="opacity: 1; width: 92rem; margin-left: 170px;">
 					<div class="text item" style="margin-bottom: 20px;">
 						<el-row>
-							<el-col :span="16">
-								<p class="text-left"><i class="el-icon-location-outline"></i>北京大学城星级宾馆</p>
-							</el-col>
 						</el-row>
 						<el-form ref="form" :model="form">
-							<el-row :gutter="20">
-								<el-col :span="12">
-									<el-form-item label="入住时间">
-										<el-date-picker type="datetime" placeholder="选择日期" v-model="form.indate" style="width: 100%;"></el-date-picker>
-									</el-form-item>
+							<el-row :gutter="20" >
+								<el-col :span="3.5">
+									<div>
+										<el-form-item class="label-text" label="入住时间 *">
+											<el-date-picker type="datetime" placeholder="选择日期"
+												v-model="form.indate"></el-date-picker>
+
+										</el-form-item>
+									</div>
 								</el-col>
-								<el-col :span="12">
-									<el-form-item label="离店时间">
-										<el-date-picker type="datetime" placeholder="选择日期" v-model="form.leavedate" style="width: 100%;"></el-date-picker>
-									</el-form-item>
+								<el-col :span="3.5">
+									<div>
+										<el-form-item class="label-text" label="离店时间 *">
+											<el-date-picker type="datetime" placeholder="选择日期"
+												v-model="form.leavedate"></el-date-picker>
+										</el-form-item>
+									</div>
 								</el-col>
+								<el-col :span="4">
+									<div>
+										<el-form-item class="label-text" label="客房类型">
+											<el-select v-model="form.selectedType" placeholder="请选择客房类型">
+												<el-option v-for="(type, index) in roomtype" :key="index" :label="type"
+													:value="type"></el-option>
+											</el-select>
+										</el-form-item>
+									</div>
+								</el-col>
+								<el-col :span="3.5">
+									<div>
+										<el-form-item class="label-text" label="住店人数">
+											<el-input-number v-model="form.max_people" :min="1" :max="99"
+												:style="{ width: '160px' }"></el-input-number>
+											<span style="margin-left: 5px;">人</span>
+										</el-form-item>
+									</div>
+								</el-col>
+								<el-col :span="5">
+									<div>
+										<el-form-item class="label-text" label="价格区间">
+											<el-input v-model="form.min_price" placeholder="最低价"
+												:style="{ width: '100px' }"></el-input>
+											<span style="margin-left: 5px;">-</span>
+											<el-input v-model="form.max_price" placeholder="最高价"
+												:style="{ width: '100px' }"></el-input>
+											<span style="margin-left: 5px;">元</span>
+										</el-form-item>
+									</div>
+								</el-col>
+								<div class="text item" >
+									<el-button type="primary"
+										style="font-size: 16px; position: absolute; top: 32px; right: 50px;"
+										@click="searchBtn">查询空余房间</el-button>
+								</div>
+
 							</el-row>
 						</el-form>
 					</div>
 				</el-card>
-
-				<el-row class="mt-1">
-					<el-card class="mb-1 ml-1 mr-1">
-						<div class="text item">
-							<el-button type="primary"  style="font-size: 16px;" class="btn-block" @click="searchBtn"> 查询空余房间</el-button>
-						</div>
-					</el-card>
-					<el-col :span="22" v-for="(tp, index) in listdata" :key="index" :offset="1" class="mb-1">
-						<el-card :body-style="{ padding: '0px' }">
-							<el-row>
-								<el-col :span="6">
-									<img :src="tp.coverImage" class="image">
-								</el-col>
-								<el-col :span="18">
-									<div style="padding: 14px;" class="text-left room">
-										<!-- :href="tp.detailUrl"  -->
-										<p class="room-title">
-											{{tp.typeName}}
-										</p>
-										<p class="room-intro">{{tp.introduce}}</p>
-										<p class="room-price">￥{{tp.price}} 起</p>
-										<p class="room-comment">“{{tp.feature}}”</p>
-									</div>
-								</el-col>
-							</el-row>
-						</el-card>
-					</el-col>
-				</el-row>
+				<div class="container">
+					<h2 style="text-align: left; margin-left: 80px;">{{ heading }}</h2>
+					<el-row class="mt-1">
+						<el-col :span="10" v-for="(tp, index) in paginatedList" :key="index" :offset="1" class="mb-1">
+							<div @click="openDialog(tp)" style="cursor: pointer;">
+								<el-card :body-style="{ padding: '0px' }">
+									<el-row>
+										<el-col :span="6">
+											<img :src="tp.type.coverImage" class="image">
+										</el-col>
+										<el-col :span="18">
+											<div style="padding: 12px;" class="text-left room">
+												<!-- :href="tp.detailUrl"  -->
+												<p class="room-title">
+													{{ tp.type.typeName }}-{{ tp.number }}
+												</p>
+												<p class="room-intro">{{ tp.introduce }}</p>
+												<p class="room-price">￥{{ tp.type.price }}</p>
+												<p class="room-comment">{{ tp.introduces.面积 }}，可容纳{{ tp.introduces.容纳 }}<br>
+													WIFI: {{ tp.introduces.WIFI }}<br>早餐: {{ tp.introduces.早餐 }}<br>热水:
+													{{ tp.introduces.热水 }}<br>
+													电脑: {{ tp.introduces.电脑 }}<br>电视: {{ tp.introduces.电视 }}</p>
+											</div>
+										</el-col>
+									</el-row>
+								</el-card>
+							</div>
+						</el-col>
+					</el-row>
+					<el-pagination v-model="currentPage" :total="listdata.length" :page-size="pageSize"
+						layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange"></el-pagination>
+				</div>
 			</el-main>
-			<el-footer class="footer">
-				<footbar></footbar>
-			</el-footer>
-			<el-dialog title="提示" :visible.sync="dialogVisible" width="95%">
-				<span>您还没有选择完整的时间段！</span>
+			<el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
+				<span style="font-size: 16px;">{{warning}}</span>
 				<span slot="footer" class="dialog-footer">
-					<el-button type="primary" @click="dialogVisible = false"> 确定</el-button>
+					<div style="display: flex; justify-content: center;">
+						<el-button type="primary" @click="dialogVisible = false">确定</el-button>
+					</div>
+				</span>
+			</el-dialog>
+			<el-dialog title="房间预定" :visible.sync="bookDialogVisible" width="30%">
+				<el-card>
+					<el-row>
+						<el-col :span="6">
+							<img :src="bookRoom.type.coverImage" class="book-image">
+						</el-col>
+						<el-col :span="18">
+							<div style="padding: 12px;" class="text-right room">
+								<!-- :href="tp.detailUrl"  -->
+								<p class="room-title">
+									{{ bookRoom.type.typeName }}-{{ bookRoom.number }}
+								</p>
+								<p class="room-intro">{{ bookRoom.introduce }}</p>
+								<p class="room-price">￥{{ bookRoom.type.price }}</p>
+								<p class="room-comment">{{ bookRoom.introduces.面积 }}，可容纳{{ bookRoom.introduces.容纳 }}<br>
+									WIFI: {{ bookRoom.introduces.WIFI }}<br>早餐: {{ bookRoom.introduces.早餐 }}<br>热水:
+									{{ bookRoom.introduces.热水 }}<br>
+									电脑: {{ bookRoom.introduces.电脑 }}<br>电视: {{ bookRoom.introduces.电视 }}</p>
+							</div>
+						</el-col>
+					</el-row>
+					<el-form ref="form" :model="form">
+						<el-row>
+							<el-form-item label="入住时间" label-width="100px">
+								<el-date-picker type="datetime" placeholder="选择日期" v-model="form.indate"></el-date-picker>
+
+							</el-form-item>
+						</el-row>
+						<el-row>
+							<el-form-item label="离店时间" label-width="100px">
+								<el-date-picker type="datetime" placeholder="选择日期"
+									v-model="form.leavedate"></el-date-picker>
+							</el-form-item>
+						</el-row>
+						<el-row>
+							<el-form-item label="住店人数" label-width="100px">
+								<el-input-number v-model="form.max_people" :min="1" :max="99"
+									:style="{ width: '160px' }"></el-input-number>
+								<span style="margin-left: 5px;">人</span>
+							</el-form-item>
+						</el-row>
+					</el-form>
+				</el-card>
+				<span slot="footer" class="dialog-footer">
+					<div style="display: flex; justify-content: center;">
+						<el-button type="primary" @click="bookDialogVisible = false">预定</el-button>
+						<el-button type="danger" @click="bookDialogVisible = false">取消</el-button>
+					</div>
 				</span>
 			</el-dialog>
 		</el-container>
@@ -70,148 +169,268 @@
 </template>
 
 <script>
-	import footbar from "@/components/footbar.vue";
-	import store from './../store';
-	export default {
-		data() {
-			return {
-				dialogVisible: false,
+import store from './../store';
+export default {
+	data() {
+		return {
+			bookstat: {},
+			roomNumber: "",
+			dialogVisible: false,
+			bookDialogVisible: false,
+			form: {
+				indate: '',
+				leavedate: '',
+				currentDate: new Date(),
+				selectedType: "",
+				max_people: 0,
+				min_price: '',
+				max_price: '',
+			},
+			heading: '当前所有空闲房间',
+			warning :'',
+			bookRoom: {
+				id: 1,
+				introduces: {
+					WIFI: "有",
+					容纳: "2-3人",
+					早餐: "有",
+					热水: "有",
+					电脑: "有",
+					电视: "有",
+					面积: "14m²",
+				},
+				maxPeople: 1,
+				number: "201",
+				type: {
+					coverImage: "./img/sEXDVe.jpg",
+					detailUrl: "",
+					feature: "“舒适、简洁”",
+					id: 1,
+					introduce: "14㎡-15㎡",
+					price: 188,
+					typeName: "单人房",
+				},
 				form: {
 					indate: '',
 					leavedate: '',
-					currentDate: new Date()
+					people_num: 0,
 				},
-				listdata: {
-
-				},
+			},
+			listdata: [],
+			paginatedList: [],
+			roomtype: [],
+			currentPage: 1,
+			pageSize: 6,
+		}
+	},
+	methods: {
+		showroom() {
+			console.log(123);
+			this.roomVisible = true;
+		},
+		searchBtn() {
+			if (this.form.indate == "" || this.form.leavedate == "") {
+				this.warning='您还没有选择完整的时间段!';
+				this.dialogVisible = true;
+				return;
 			}
-		},
-		components: {
-			footbar,
-		},
-		methods: {
-			showroom() {
-				console.log(123);
-				this.roomVisible = true;
-			},
-			searchBtn() {
-				// console.log(this.changeTimeStr(this.form.indate));
-				if (this.form.indate == "" || this.form.leavedate == "") {
-					this.dialogVisible = true;
-					return;
-				}
-				this.axios.post("http://localhost:9151/user/listRoom", {
-						"inTime": this.changeTimeStr(this.form.indate),
-						"leaveTime": this.changeTimeStr(this.form.leavedate)
-					})
-					.then(res => {
-						this.$store.state.searchSet = res.data.data;
-						this.$store.state.searchTime.inTime = this.changeTimeStr(this.form.indate);
-						this.$store.state.searchTime.leaveTime = this.changeTimeStr(this.form.leavedate);
-						this.$router.push("/search");
-					})
-					.catch(() => {
-						console.log("error");
-					})
-
-			},
-			changeTimeStr(str) {
-				str = str.toString();
-				str = str.replace(/ GMT.+$/, ''); // Or str = str.substring(0, 24)
-				let d = new Date(str);
-				let a = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
-				for (var i = 0, len = a.length; i < len; i++) {
-					if (a[i] < 10) {
-						a[i] = '0' + a[i];
-					}
-				}
-				str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
-				return str;
-			},
-			unity() {
-				window.open("http://unity.abohelloworld.top/");
+			if (new Date(this.form.indate) >= new Date(this.form.leavedate)) {
+				this.warning='入店时间必须小于离店时间!';
+				this.dialogVisible = true;
+				return;
 			}
-		},
-		mounted() {
-			this.axios.get("http://localhost:9151/user/listTypes")
+			this.axios.post("http://localhost:9151/user/listRoom", {
+				"inTime": this.changeTimeStr(this.form.indate),
+				"leaveTime": this.changeTimeStr(this.form.leavedate),
+				"roomType": this.form.selectedType,
+				"maxPeople": this.form.max_people,
+				"minPrice": this.form.min_price,
+				"maxPrice": this.form.max_price
+			})
 				.then(res => {
 					this.listdata = res.data.data;
-					console.log(this.listdata);
+					//this.$store.state.searchSet = res.data.data;
+					//this.$store.state.searchTime.inTime = this.changeTimeStr(this.form.indate);
+					//this.$store.state.searchTime.leaveTime = this.changeTimeStr(this.form.leavedate);
+					//this.$router.push("/search");
+					this.heading = '为您找到 ' + this.listdata.length + ' 条结果';
+					this.refreshList();
 				})
-				.catch(res => {
-					console.log(res);
+				.catch(() => {
+					console.log("error");
 				})
-		}
+
+		},
+		openDialog(tp) {
+			this.bookRoom = tp;
+			console.log(this.bookRoom);
+			this.bookDialogVisible = true;
+		},
+		changeTimeStr(str) {
+			str = str.toString();
+			str = str.replace(/ GMT.+$/, ''); // Or str = str.substring(0, 24)
+			let d = new Date(str);
+			let a = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+			for (var i = 0, len = a.length; i < len; i++) {
+				if (a[i] < 10) {
+					a[i] = '0' + a[i];
+				}
+			}
+			str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
+			return str;
+		},
+		unity() {
+			window.open("http://unity.abohelloworld.top/");
+		},
+		resolveData() {
+			this.axios
+				.get(
+					"http://localhost:9151/user/roomTypes"
+				)
+				.then((res) => {
+					this.roomtype = res.data.data;
+					this.roomtype.push("所有房型");
+					console.log(this.roomtype);
+				})
+				.catch(() => {
+					console.log("filed get roomtype");
+				});
+		},
+		handlePrevClick() {
+			this.currentPage--;
+			this.refreshList();
+		},
+		handleNextClick() {
+			this.currentPage++;
+			this.refreshList();
+		},
+		handleCurrentChange(page) {
+			this.currentPage = page;
+			this.refreshList();
+		},
+		refreshList() {
+			const startIndex = (this.currentPage - 1) * this.pageSize;
+			const endIndex = startIndex + this.pageSize;
+			this.paginatedList = this.listdata.slice(startIndex, endIndex);
+		},
+	},
+	mounted() {
+		this.axios.get("http://localhost:9151/user/listAllSpareRoom")
+			.then(res => {
+				this.listdata = res.data.data;
+				console.log("get listAllSpareRoom hit");
+				console.log(this.listdata);
+				this.refreshList();
+			})
+			.catch(res => {
+				console.log(res);
+			}),
+			this.resolveData();
 	}
+}
 </script>
 
 <style scoped="scoped">
-	.box-card {
-		height: 30vh;
-		margin: -7rem 1rem 0;
-	}
+.box-card {
+	height: 13vh;
+	width: 100rem;
+	margin: -7rem auto 0;
+}
 
-	.time {
-		font-size: 13px;
-		color: #999;
-	}
+.time {
+	font-size: 13px;
+	color: #999;
+}
 
-	.bottom {
-		margin-top: 13px;
-		line-height: 12px;
-	}
+.bottom {
+	margin-top: 13px;
+	line-height: 12px;
+}
 
-	.button {
-		padding: 0;
-		float: right;
-	}
+.button {
+	padding: 0;
+	float: right;
+}
 
-	.image {
-		width: 120%;
-		display: block;
-		padding: 1rem;
-		border: 1px solid transparent;
-		border-radius: 20px;
-	}
+.image {
+	width: 120%;
+	display: block;
+	padding: 1rem;
+	border: 1px solid transparent;
+	border-radius: 20px;
+	aspect-ratio: 4/3;
+}
 
-	.clearfix:before,
-	.clearfix:after {
-		display: table;
-		content: "";
-	}
+.book-image {
+	width: 260%;
+	display: block;
+	padding: 1rem;
+	border: 1px solid transparent;
+	border-radius: 20px;
+	aspect-ratio: 16/9;
+}
 
-	.clearfix:after {
-		clear: both
-	}
+x .clearfix:after {
+	display: table;
+	content: "";
+}
 
-	.room p {
-		margin-bottom: 0.25rem;
-		margin-top: 0;
-		margin-left: 4rem;
-	}
+.clearfix:after {
+	clear: both
+}
 
-	.room-title {
-		font-size: 1.2rem;
-		font-weight: bolder;
-		color: #303133;
-	}
+.room p {
+	margin-bottom: 0.25rem;
+	margin-top: 0;
+	margin-left: 4rem;
+}
 
-	.room-intro {
-		font-size: 0.9rem;
-		color: #606266;
-	}
+.room-title {
+	font-size: 1.2rem;
+	font-weight: bolder;
+	color: #303133;
+}
 
-	.room-price {
-		font-size: 1.2rem;
-		color: #F56C6C;
-	}
+.room-intro {
+	font-size: 0.9rem;
+	color: #606266;
+}
 
-	.room-comment {
-		font-size: 0.8rem;
-		color: #909399;
-	}
+.room-price {
+	font-size: 1.2rem;
+	color: #F56C6C;
+}
 
-	.black {
-		color: #303133;
-	}
+.room-comment {
+	font-size: 0.8rem;
+	color: #909399;
+}
+
+.black {
+	color: #303133;
+}
+
+.nav-link {
+	color: black;
+	margin-right: 24px;
+	text-decoration: none;
+}
+
+.nav-link:hover {
+	text-decoration: underline;
+}
+
+.label-text {
+	margin-right: 10px;
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+}
+
+.container {
+	width: 105rem;
+	margin-left: 100px;
+	margin-right: 0px;
+}
+
 </style>

@@ -4,6 +4,7 @@ body {
   padding: 0;
   height: 100%;
   background-color: rgb(256, 256, 256);
+  
 }
 
 .pop-footer {
@@ -42,7 +43,7 @@ body {
 }
 
 .el-main {
-  max-height: 94vh;
+  max-height: 98vh;
   padding: 0;
 }
 
@@ -56,13 +57,14 @@ a {
 }
 
 .bg-header {
-  background: url(../img/banner.jpg);
   background-size: cover;
-  height: 30vh;
+  height: 20vh;
   padding: 20px 20px 40px 20px;
   border: 0px solid transparent;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  display: flex;
+  justify-content: flex-end; 
 }
 
 .btn-block {
