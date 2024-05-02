@@ -93,7 +93,7 @@
     methods: {
       logoutBtn() {
         this.dialogVisible = false;
-        this.$router.push("/login");
+        this.$router.push("/findroom");
         this.axios.get("http://localhost:9151/user/logout")
         .then(res => {
           // console.log("成功" + res);

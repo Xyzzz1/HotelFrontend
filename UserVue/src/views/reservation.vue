@@ -28,33 +28,20 @@
                             </el-form-item>
 
                             <el-form-item label="住店人数">
-                                <el-input-number
-                                    v-model="resinfo.num"
-                                    :min="1"
-                                    :max="maxp"
-                                    label="请输入"
-                                ></el-input-number>
+                                <el-input-number v-model="resinfo.num" :min="1" :max="maxp" label="请输入"></el-input-number>
                                 <span class="ml-1">人</span>
                             </el-form-item>
 
                             <el-form-item label="提供发票">
-                                <el-switch
-                                    v-model="resinfo.isNeedInvoice"
-                                ></el-switch>
+                                <el-switch v-model="resinfo.isNeedInvoice"></el-switch>
                             </el-form-item>
 
                             <el-form-item label="价格">
-                                <span v-model="resinfo.price" class="room-price"
-                                    >{{ sumprice }} 元</span
-                                >
+                                <span class="room-price">{{ sumprice }} 元</span>
                             </el-form-item>
 
                             <el-form-item>
-                                <el-button
-                                    type="primary"
-                                    @click="submitForm('ruleForm')"
-                                    style="font-size: 22px"
-                                >
+                                <el-button type="primary" @click="submitForm('ruleForm')" style="font-size: 22px">
                                     立即预订
                                 </el-button>
                                 <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
@@ -71,9 +58,7 @@
                 <span>你确定要提交预订单吗？</span>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisible = false" style="font-size: 18px;"> 取消</el-button>
-                    <el-button type="primary" @click="confirmSubmitForm"
-                        >确定</el-button
-                    >
+                    <el-button type="primary" @click="confirmSubmitForm">确定</el-button>
                 </span>
             </el-dialog>
         </el-container>
@@ -89,7 +74,7 @@ export default {
             resinfo: {
                 num: "",
                 isNeedInvoice: false,
-                type:"",
+                type: "",
             },
             price: 0,
             sumprice: 0,
@@ -142,7 +127,7 @@ export default {
             this.axios
                 .post(
                     "http://localhost:9151/user/roomDetail?roomId=" +
-                        this.bookstat.roomid
+                    this.bookstat.roomid
                 )
                 .then((res) => {
                     this.roomtype = res.data.data;

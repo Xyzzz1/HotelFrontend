@@ -1,8 +1,3 @@
-/*
- * @Description: 
- * @Author: Rabbiter
- * @Date: 2023-03-11 13:37:23
- */
 import Vue from 'vue'
 import Vuex from 'vuex'
 

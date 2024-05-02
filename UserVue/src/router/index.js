@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
-import login from "../views/login.vue";
+import findroom from "../views/findroom.vue";
 
 var CtrlSwitch = true;
 
@@ -9,7 +9,7 @@ const routes = [
   {
     path: '/',
     name: '',
-    component: login,
+    component: findroom,
     meta: {
       title: "酒店客房预订系统"
     },

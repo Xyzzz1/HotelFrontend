@@ -6,15 +6,20 @@
 				<div class="bg-header">
 					<router-link to="/about" class="nav-link">关于我们</router-link>
 					<router-link to="/contact" class="nav-link">联系我们</router-link>
-					<router-link to="/service" class="nav-link">房间服务</router-link>
-					<router-link to="/mine" class="nav-link">账号信息</router-link>
+					<router-link v-if="isLoggedIn" to="/service" class="nav-link">房间服务</router-link>
+					<router-link v-else to="/login" class="nav-link">房间服务</router-link>
+					<router-link v-if="isLoggedIn" to="/mine" class="nav-link">我的账号</router-link>
+					<router-link v-else to="/login" class="nav-link">我的账号</router-link>
+					<router-link v-if="isLoggedIn" :to="'/user/' + username" tag="div" aria-disabled="true" class="nav-link"
+						style="pointer-events: none;">欢迎, {{ username }} </router-link>
+					<router-link v-else :to="'/login'" class="nav-link">登录</router-link>
 				</div>
 				<el-card class="box-card" style="opacity: 1; width: 92rem; margin-left: 170px;">
 					<div class="text item" style="margin-bottom: 20px;">
 						<el-row>
 						</el-row>
 						<el-form ref="form" :model="form">
-							<el-row :gutter="20" >
+							<el-row :gutter="20">
 								<el-col :span="3.5">
 									<div>
 										<el-form-item class="label-text" label="入住时间 *">
@@ -63,7 +68,7 @@
 										</el-form-item>
 									</div>
 								</el-col>
-								<div class="text item" >
+								<div class="text item">
 									<el-button type="primary"
 										style="font-size: 16px; position: absolute; top: 32px; right: 50px;"
 										@click="searchBtn">查询空余房间</el-button>
@@ -107,7 +112,7 @@
 				</div>
 			</el-main>
 			<el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
-				<span style="font-size: 16px;">{{warning}}</span>
+				<span style="font-size: 16px;">{{ warning }}</span>
 				<span slot="footer" class="dialog-footer">
 					<div style="display: flex; justify-content: center;">
 						<el-button type="primary" @click="dialogVisible = false">确定</el-button>
@@ -155,12 +160,23 @@
 								<span style="margin-left: 5px;">人</span>
 							</el-form-item>
 						</el-row>
+						<el-row>
+							<el-form-item label="提供发票" label-width="100px">
+								<el-switch v-model="form.isNeedInvoice"></el-switch>
+							</el-form-item>
+						</el-row>
+						<el-row>
+							<el-form-item label="房间总价" label-width="100px">
+								<span class="room-price">{{ sumprice }} 元</span>
+							</el-form-item>
+						</el-row>
 					</el-form>
 				</el-card>
 				<span slot="footer" class="dialog-footer">
 					<div style="display: flex; justify-content: center;">
-						<el-button type="primary" @click="bookDialogVisible = false">预定</el-button>
-						<el-button type="danger" @click="bookDialogVisible = false">取消</el-button>
+						<el-button type="primary" @click="confirmSubmitForm">预定</el-button>
+						<el-button type="danger"
+							@click="bookDialogVisible = false, form.isNeedInvoice = false">取消</el-button>
 					</div>
 				</span>
 			</el-dialog>
@@ -173,10 +189,13 @@ import store from './../store';
 export default {
 	data() {
 		return {
+			isLoggedIn: false,
+			username: '',
 			bookstat: {},
 			roomNumber: "",
 			dialogVisible: false,
 			bookDialogVisible: false,
+			sumprice: '',
 			form: {
 				indate: '',
 				leavedate: '',
@@ -185,9 +204,10 @@ export default {
 				max_people: 0,
 				min_price: '',
 				max_price: '',
+				isNeedInvoice: 0,
 			},
 			heading: '当前所有空闲房间',
-			warning :'',
+			warning: '',
 			bookRoom: {
 				id: 1,
 				introduces: {
@@ -223,19 +243,31 @@ export default {
 			pageSize: 6,
 		}
 	},
-	methods: {
-		showroom() {
-			console.log(123);
-			this.roomVisible = true;
+	watch: {
+		'form.indate': function (newVal, oldVal) {
+			this.form.indate = newVal;
+			if (this.form.indate != null && this.form.leavedate != null)
+				this.calcPrice();
+			else
+				this.sumprice = '--';
 		},
+		'form.leavedate': function (newVal, oldVal) {
+			this.form.leavedate = newVal;
+			if (this.form.indate != null && this.form.leavedate != null)
+				this.calcPrice();
+			else
+				this.sumprice = '--';
+		}
+	},
+	methods: {
 		searchBtn() {
 			if (this.form.indate == "" || this.form.leavedate == "") {
-				this.warning='您还没有选择完整的时间段!';
+				this.warning = '您还没有选择完整的时间段!';
 				this.dialogVisible = true;
 				return;
 			}
 			if (new Date(this.form.indate) >= new Date(this.form.leavedate)) {
-				this.warning='入店时间必须小于离店时间!';
+				this.warning = '入店时间必须小于离店时间!';
 				this.dialogVisible = true;
 				return;
 			}
@@ -265,6 +297,53 @@ export default {
 			this.bookRoom = tp;
 			console.log(this.bookRoom);
 			this.bookDialogVisible = true;
+			this.calcPrice();
+		},
+		confirmSubmitForm() {
+			this.bookDialogVisible = false;
+			if (this.form.indate == null || this.form.leavedate == null) {
+				this.$message({
+					message: "您还没有选择完整的时间段!",
+					type: "error",
+				});
+				this.bookDialogVisible = true;
+				this.form.isNeedInvoice = false;
+				return;
+			}
+			if (new Date(this.form.indate) > new Date(this.form.leavedate)) {
+				this.$message({
+					message: '入店时间必须小于离店时间!',
+					type: "error",
+				});
+				this.bookDialogVisible = true;
+				this.form.isNeedInvoice = false;
+				return;
+			}
+			let json = {
+				roomId: this.bookRoom.id,
+				inTime: this.changeTimeStr(this.form.indate),
+				leaveTime: this.changeTimeStr(this.form.leavedate),
+				realPeople: this.form.max_people,
+				fapiao: this.form.isNeedInvoice ? 1 : 0,
+			};
+			console.log(json);
+			this.axios
+				.post("http://localhost:9151/user/bookRoom", json)
+				.then((res) => {
+					if (res.data.code != "200") {
+						this.$message({
+							message: "请先登录!",
+							type: "error",
+						});
+						this.$router.push("/");
+					} else {
+						this.$router.push("/submitok");
+					}
+				})
+				.catch((res) => {
+					this.$router.push("/submitfail");
+				});
+			this.form.isNeedInvoice = false;
 		},
 		changeTimeStr(str) {
 			str = str.toString();
@@ -289,7 +368,6 @@ export default {
 				)
 				.then((res) => {
 					this.roomtype = res.data.data;
-					this.roomtype.push("所有房型");
 					console.log(this.roomtype);
 				})
 				.catch(() => {
@@ -313,6 +391,36 @@ export default {
 			const endIndex = startIndex + this.pageSize;
 			this.paginatedList = this.listdata.slice(startIndex, endIndex);
 		},
+		calcPrice() {
+			let stra = this.changeTimeStr(this.form.leavedate);
+			let sa1 = stra.split(" ")[0].split("-");
+			let sa2 = stra.split(" ")[1].split(":");
+			let leaveTime = new Date();
+			leaveTime.setFullYear(sa1[0], sa1[1], sa1[2]);
+			leaveTime.setHours(sa2[0]);
+			leaveTime.setMinutes(sa2[1]);
+			let strb = this.changeTimeStr(this.form.indate);
+			if (strb > stra) {
+				this.sumprice = '--';
+				return;
+			}
+			let sb1 = strb.split(" ")[0].split("-");
+			let sb2 = strb.split(" ")[1].split(":");
+			let inTime = new Date();
+			inTime.setFullYear(sb1[0], sb1[1], sb1[2]);
+			inTime.setHours(sb2[0]);
+			inTime.setMinutes(sb2[1]);
+			let realday = (leaveTime - inTime) / 86400000;
+			// console.log(Math.ceil(realday));
+			realday = Math.ceil(realday);
+			let price = this.bookRoom.type.price;
+			this.sumprice = price * realday;
+			if (isNaN(this.sumprice)) {
+				this.sumprice = '--';
+			}
+			//console.log("单价: " + price + " 时长: " + realday + " 总价: " + this.sumprice);
+			// console.log(this.bookstat.leaveTime,this.bookstat.inTime,this.bookstat.leaveTime - this.bookstat.inTime);
+		},
 	},
 	mounted() {
 		this.axios.get("http://localhost:9151/user/listAllSpareRoom")
@@ -326,6 +434,15 @@ export default {
 				console.log(res);
 			}),
 			this.resolveData();
+		this.axios.get("http://localhost:9151/user/isLoggedIn")
+			.then(res => {
+				if (res.data.code == "200") {
+					this.username = res.data.data;
+					this.isLoggedIn = true;
+				} else {
+					this.isLoggedIn = false;
+				}
+			})
 	}
 }
 </script>
@@ -433,4 +550,8 @@ x .clearfix:after {
 	margin-right: 0px;
 }
 
+.room-price {
+	font-size: 1.3rem;
+	color: #f56c6c;
+}
 </style>
