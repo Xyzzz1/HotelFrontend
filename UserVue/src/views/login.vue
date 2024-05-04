@@ -85,7 +85,7 @@ export default {
                             this.disabled = false;
                             this.$store.commit("setFind");
                             this.$router.push("/findroom");
-                        }, 2000);
+                        }, 1000);
                     } else {
                         this.iconstyle = "el-icon-close";
                         this.btnType = "danger";
@@ -97,7 +97,7 @@ export default {
                             this.disabled = false;
                             this.iconstyle = "iconfont icon-r-right";
                             this.btnType = "primary";
-                        }, 2000);
+                        }, 1000);
                     }
                 })
                 .catch((e) => {
