@@ -91,8 +91,7 @@ export default {
         hours: undefined,
         minutes: undefined,
         seconds: undefined,
-      }
-
+      },
     }
   },
   watch: {},
@@ -100,39 +99,101 @@ export default {
   beforeCreate() { },
   created() { },
   beforeMount() {
+  },
+  mounted() {
     this.axios.get("http://localhost:9151/service/conditioner/getRoomID")
       .then(res => {
         if (res.data.code != '200') {
           console.log("没有查询到该用户的订房信息！");
         } else {
           this.room_id = res.data.data;
+          this.createEventSource();
           this.axios.get("http://localhost:9151/service/conditioner/status?roomID=" +
             this.room_id
           ).then((res) => {
             if (res.data.code == '200') {
-              this.power_on=true,
-              this.conditioner_state=1,
-              this.settings.temp=res.data.targetTemperature,
-              this.settings.wind=res.data.currentWindSpeed            
-            }else if(res.data.code == '501'){
-              this.conditioner_state=2,
-              this.power_on=true
+              this.power_on = true;
+              this.conditioner_state = 1;
+              this.settings.temp = res.data.targetTemperature;
+              this.settings.wind = res.data.currentWindSpeed;
+            } else if (res.data.code == '501') {
+              this.conditioner_state = 2;
+              this.power_on = true
             }
           })
         }
-      })
-  },
-  mounted() {
+      });
   },
   beforeUpdate() { },
   updated() { },
+  beforeDestroy() {
+    //this.source.close();
+    //this.closeSSE();
+  },
   destroyed() { },
   methods: {
     handle_power_on() {
       if (this.power_on) {
-        console.log(1);
+        let json = {
+          roomID: this.room_id,
+          userID: null,
+          powerO: true,
+          targetTemperature: 25,
+          windSpeed: 2,
+          additionalFee: 0,
+          targetDuration: null,
+          requestTime: this.changeTimeStr(new Date().toGMTString())
+        }
+        this.axios.post("http://localhost:9151/service/conditioner/turnOn", json)
+          .then((res) => {
+            console.log(res.data.data);
+          });
+
       } else {
-        console.log(2);
+        this.axios.post("http://localhost:9151/service/conditioner/turnOff?roomID=" + this.room_id)
+          .then((res) => {
+            if (res.data.code == '200') {
+              console.log(res.data.data);
+            }
+            else {
+              console.log(res.data.data);
+            }
+          });
+      }
+    },
+    changeTimeStr(str) {
+      str = str.toString();
+      str = str.replace(/ GMT.+$/, ''); // Or str = str.substring(0, 24)
+      let d = new Date(str);
+      let a = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+      for (var i = 0, len = a.length; i < len; i++) {
+        if (a[i] < 10) {
+          a[i] = '0' + a[i];
+        }
+      }
+      str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
+      return str;
+    },
+
+    createEventSource() {
+      const that = this;
+      if (window.EventSource) {
+        console.log(this.room_id);
+        const source = new EventSource("http://localhost:9151/service/conditioner/subscribe?roomID=" + this.room_id);
+        source.onopen = (event) => {
+          console.log("onopen:" + this.room_id + ": " + event)
+        };
+        source.onmessage = (event) => {
+          console.log("收到消息:" + this.room_id + ": " + event.data);
+        };
+        source.onerror = (event) =>{
+            console.log("onerror :"+clientId+": "+event)
+        };
+        source.close = (event) => { 
+          console.log("close :" + this.room_id + ": " + event) 
+        };
+      } else {
+        alert('你的浏览器不支持SSE')
       }
     },
     handle_hour_change() {
@@ -149,7 +210,10 @@ export default {
         message: message_output,
         type: "error",
       });
-    }
+    },
+    closeSSE() {
+
+    },
   },
   fillter: {},
 }
