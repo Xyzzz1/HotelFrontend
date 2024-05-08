@@ -32,23 +32,23 @@
         </el-col>
         <el-col :span="14" class="col-flex">
           <el-button-group>
-            <el-button type="primary">△</el-button>
-            <el-button type="primary">▽</el-button>
+            <el-button type="primary" @click="handleTemp(0)">△</el-button>
+            <el-button type="primary" @click="handleTemp(1)">▽</el-button>
           </el-button-group>
         </el-col>
       </el-row>
       <el-row class="row-spacing">
         <el-col :span="6">
-          <p class="font-setting" v-if="settings.wind === -1">风速：--</p>
-          <p class="font-setting" v-else-if="settings.wind === 0">风速：低风</p>
-          <p class="font-setting" v-else-if="settings.wind === 1">风速：中风</p>
+          <p class="font-setting" v-if="settings.wind === 0">风速：--</p>
+          <p class="font-setting" v-else-if="settings.wind === 1">风速：低风</p>
+          <p class="font-setting" v-else-if="settings.wind === 2">风速：中风</p>
           <p class="font-setting" v-else>风速：高风</p>
 
         </el-col>
         <el-col :span="14" class="col-flex">
           <el-button-group>
-            <el-button type="primary">△</el-button>
-            <el-button type="primary">▽</el-button>
+            <el-button type="primary" @click="handleWind(0)">△</el-button>
+            <el-button type="primary" @click="handleWind(1)">▽</el-button>
           </el-button-group>
         </el-col>
       </el-row>
@@ -85,6 +85,11 @@ export default {
       indoor_temp: 25,
       conditioner_state: 0,
       mode: 0,
+      temp_settings: {
+        temp: 10086,
+        wind: -1,
+        target_duration: null,
+      },
       settings: {
         temp: 10086,
         wind: -1,
@@ -92,6 +97,8 @@ export default {
         minutes: undefined,
         seconds: undefined,
       },
+
+      temp_timer: null,
     }
   },
   watch: {},
@@ -108,7 +115,7 @@ export default {
         } else {
           this.room_id = res.data.data;
           this.createEventSource();
-          this.axios.get("http://localhost:9151/service/conditioner/status?roomID=" +
+          this.axios.get("http://localhost:9151/service/conditioner/status?roomId=" +
             this.room_id
           ).then((res) => {
             if (res.data.code == '200') {
@@ -116,7 +123,7 @@ export default {
               this.conditioner_state = 1;
               this.settings.temp = res.data.targetTemperature;
               this.settings.wind = res.data.currentWindSpeed;
-            } else if (res.data.code == '501') {
+            } else if (res.data.code == '502') {
               this.conditioner_state = 2;
               this.power_on = true
             }
@@ -134,23 +141,29 @@ export default {
   methods: {
     handle_power_on() {
       if (this.power_on) {
+        this.temp_settings.temp = 25;
+        this.temp_settings.wind = 2;
         let json = {
           roomID: this.room_id,
           userID: null,
           powerO: true,
-          targetTemperature: 25,
-          windSpeed: 2,
+          targetTemperature: this.temp_settings.temp,
+          windSpeed: this.temp_settings.wind,
           additionalFee: 0,
           targetDuration: null,
           requestTime: this.changeTimeStr(new Date().toGMTString())
         }
         this.axios.post("http://localhost:9151/service/conditioner/turnOn", json)
           .then((res) => {
-            console.log(res.data.data);
+            if (res.data.code == '200') {
+              this.conditioner_state = 1;
+            } else {
+              this.conditioner_state = 2;
+            }
           });
 
       } else {
-        this.axios.post("http://localhost:9151/service/conditioner/turnOff?roomID=" + this.room_id)
+        this.axios.post("http://localhost:9151/service/conditioner/turnOff?roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               console.log(res.data.data);
@@ -174,23 +187,115 @@ export default {
       str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
       return str;
     },
+    handleTemp(val) {
+      if (!this.power_on) {
+        this.$message({
+          message: '空调未开机！',
+          type: "error",
+        });
+        clearTimeout(this.timer);
+        return;
+      }
+      if (val == '0') {
+        this.settings.temp += 1;
+
+      } else {
+        this.settings.temp -= 1;
+      }
+
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.axios.post("http://localhost:9151/service/conditioner/adjustTargetTemperature?targetTemperature=" + this.settings.temp + "&roomId=" + this.room_id)
+          .then((res) => {
+            if (res.data.code == '200') {
+              this.$message({
+                message: res.data.data,
+                type: "success",
+              });
+            } else {
+              this.$message({
+                message: res.data.data,
+                type: "error",
+              });
+            }
+          });
+      }, 1000);
+    },
+
+    handleWind(val) {
+      if (!this.power_on) {
+        this.$message({
+          message: '空调未开机！',
+          type: "error",
+        });
+        clearTimeout(this.timer);
+        return;
+      }
+      if (val == '0') {
+        if (this.settings.wind == 3) {
+          this.$message({
+            message: '已是最高风速',
+            type: "error",
+          });
+          return;
+        }
+        this.settings.wind += 1;
+      } else {
+        if (this.settings.wind == 1) {
+          this.$message({
+            message: '已是最低风速',
+            type: "error",
+          });
+          return;
+        }
+        this.settings.wind -= 1;
+      }
+
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.axios.post("http://localhost:9151/service/conditioner/adjustWindSpeed?windSpeed=" + this.settings.wind + "&roomId=" + this.room_id)
+          .then((res) => {
+            if (res.data.code == '200') {
+              this.$message({
+                message: res.data.data,
+                type: "success",
+              });
+            } else {
+              this.$message({
+                message: res.data.data,
+                type: "error",
+              });
+            }
+          });
+      }, 1000);
+    },
 
     createEventSource() {
       const that = this;
       if (window.EventSource) {
-        console.log(this.room_id);
-        const source = new EventSource("http://localhost:9151/service/conditioner/subscribe?roomID=" + this.room_id);
+        const source = new EventSource("http://localhost:9151/service/conditioner/subscribe?roomId=" + this.room_id);
         source.onopen = (event) => {
           console.log("onopen:" + this.room_id + ": " + event)
         };
         source.onmessage = (event) => {
           console.log("收到消息:" + this.room_id + ": " + event.data);
+          let message = JSON.parse(event.data);
+          if (message.powerOn) {
+            this.settings.temp = this.temp_settings.temp;
+            this.settings.wind = this.temp_settings.wind;
+          } else {
+            this.conditioner_state = 0;
+            this.settings.temp = 10086;
+            this.settings.wind = -1;
+
+          }
+
         };
-        source.onerror = (event) =>{
-            console.log("onerror :"+clientId+": "+event)
+        source.onerror = (event) => {
+          console.log("onerror :" + clientId + ": " + event)
         };
-        source.close = (event) => { 
-          console.log("close :" + this.room_id + ": " + event) 
+        source.close = (event) => {
+          console.log("close :" + this.room_id + ": " + event)
         };
       } else {
         alert('你的浏览器不支持SSE')
