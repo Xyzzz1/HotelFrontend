@@ -10,16 +10,16 @@
         <p class="font-indoor-temp">
           室内温度: {{ indoor_temp }} ℃
         </p>
-        <p class="font-indoor-temp" v-if="mode === 0">当前模式: 制冷</p>
-        <p class="font-indoor-temp" v-else-if="mode === 1">当前模式: 制热</p>
+        <p class="font-indoor-temp" v-if="conditioner_state === 0">空调状态: 关机</p>
+        <p class="font-indoor-temp" v-else-if="conditioner_state === 1">空调状态: 服务</p>
+        <p class="font-indoor-temp" v-else>空调状态: 等待</p>
       </el-col>
     </el-row>
     <el-card class="box-card" style="width: 40rem; margin-left: 100px;">
       <el-row class="row-spacing">
         <el-col :span="6">
-          <p class="font-setting" v-if="conditioner_state === 0">空调状态：关闭</p>
-          <p class="font-setting" v-else-if="conditioner_state === 1">空调状态：开启</p>
-          <p class="font-setting" v-else>空调状态：等待</p>
+          <p class="font-setting" v-if="power_on === false">开关机：关闭</p>
+          <p class="font-setting" v-else>开关机：开机</p>
         </el-col>
         <el-col :span="14" class="col-flex">
           <el-switch v-model="power_on" @change="handle_power_on"></el-switch>
@@ -52,22 +52,32 @@
           </el-button-group>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row class="row-spacing">
         <el-col :span="2">
           <p class="font-setting">定时</p>
           <div class></div>
         </el-col>
         <el-col :span="12">
-          <el-input-number v-model="settings.hours" controls-position="right" @change="handle_hour_change" :min=0
-            :max="24" placeholder="小时" class="custom-input"></el-input-number>
-          <el-input-number v-model="settings.minutes" controls-position="right" @change="handle_minute_change" :min=0
-            :max="60" placeholder="分钟" class="custom-input"></el-input-number>
-          <el-input-number v-model="settings.seconds" controls-position="right" @change="handle_second_change" :min=0
-            :max="60" placeholder="秒" class="custom-input"></el-input-number>
+          <el-input-number v-model="settings.hours" controls-position="right" @change="handle_time_change" :min=0
+            :max="23" placeholder="小时" class="custom-input"></el-input-number>
+          <el-input-number v-model="settings.minutes" controls-position="right" @change="handle_time_change" :min=0
+            :max="59" placeholder="分钟" class="custom-input"></el-input-number>
+          <el-input-number v-model="settings.seconds" controls-position="right" @change="handle_time_change" :min=0
+            :max="59" placeholder="秒" class="custom-input"></el-input-number>
         </el-col>
         <el-col :span="6" class="col-flex">
-          <el-switch v-model="timer_on"></el-switch>
+          <el-switch v-model="timer_on" @change="handleTimerChange"></el-switch>
         </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <p class="font-setting">模式</p>
+          <div class></div>
+        </el-col>
+        <el-radio-group v-model="mode">
+          <el-radio :label="1" class="radio-button">制冷</el-radio>
+          <el-radio :label="0" class="radio-button">制热</el-radio>
+        </el-radio-group>
       </el-row>
     </el-card>
   </div>
@@ -82,20 +92,21 @@ export default {
       room_id: -1,
       power_on: false,
       timer_on: false,
-      indoor_temp: 25,
+      indoor_temp: "--",
       conditioner_state: 0,
-      mode: 0,
+      mode: 1,
       temp_settings: {
         temp: 10086,
         wind: -1,
-        target_duration: null,
+        target_duration: -1,
       },
       settings: {
         temp: 10086,
-        wind: -1,
+        wind: 0,
         hours: undefined,
         minutes: undefined,
         seconds: undefined,
+        target_duration: -1,
       },
 
       temp_timer: null,
@@ -111,7 +122,10 @@ export default {
     this.axios.get("http://localhost:9151/service/conditioner/getRoomID")
       .then(res => {
         if (res.data.code != '200') {
-          console.log("没有查询到该用户的订房信息！");
+          this.$message({
+            message: "没有查询到该用户的订房信息！",
+            type: "error",
+          });
         } else {
           this.room_id = res.data.data;
           this.createEventSource();
@@ -150,13 +164,17 @@ export default {
           targetTemperature: this.temp_settings.temp,
           windSpeed: this.temp_settings.wind,
           additionalFee: 0,
-          targetDuration: null,
-          requestTime: this.changeTimeStr(new Date().toGMTString())
+          targetDuration: this.settings.target_duration,
+          requestTime: this.changeTimeStr(new Date().toGMTString()),
+          mode: 1
         }
+        console.log(json);
         this.axios.post("http://localhost:9151/service/conditioner/turnOn", json)
           .then((res) => {
             if (res.data.code == '200') {
               this.conditioner_state = 1;
+              this.settings.temp = this.temp_settings.temp;
+              this.settings.wind = this.temp_settings.wind;
             } else {
               this.conditioner_state = 2;
             }
@@ -197,9 +215,23 @@ export default {
         return;
       }
       if (val == '0') {
+        if(this.settings.temp==30){
+          this.$message({
+            message: '已是最高设定温度',
+            type: "error",
+          });
+          return;
+        }
         this.settings.temp += 1;
 
       } else {
+        if(this.settings.temp==18){
+          this.$message({
+            message: '已是最低设定温度',
+            type: "error",
+          });
+          return;
+        }
         this.settings.temp -= 1;
       }
 
@@ -280,14 +312,26 @@ export default {
         source.onmessage = (event) => {
           console.log("收到消息:" + this.room_id + ": " + event.data);
           let message = JSON.parse(event.data);
-          if (message.powerOn) {
-            this.settings.temp = this.temp_settings.temp;
-            this.settings.wind = this.temp_settings.wind;
-          } else {
-            this.conditioner_state = 0;
-            this.settings.temp = 10086;
-            this.settings.wind = -1;
+          if (message.controllerType == "status-update") { //处理开关机
+            if (message.powerOn) {
+              if(message.reason==-1){
+              this.conditioner_state = 1;
+              this.settings.temp = this.temp_settings.temp;
+              this.settings.wind = this.temp_settings.wind;
+              }else if(message.reason==-2){
+                this.conditioner_state = 2;
+                this.settings.temp = this.temp_settings.temp;
+                this.settings.wind = this.temp_settings.wind;
+              }
 
+            } else {
+              this.conditioner_state = 0;
+              this.settings.temp = 10086;
+              this.settings.wind = 0;
+
+            }
+          } else if (message.controllerType == "temperature-update") { //处理温度变化
+            this.indoor_temp = message.temperature;
           }
 
         };
@@ -301,14 +345,22 @@ export default {
         alert('你的浏览器不支持SSE')
       }
     },
-    handle_hour_change() {
-
+    handle_time_change() {
+      if (this.settings.hours == null)
+        this.settings.hours = 0;
+      if (this.settings.minutes == null)
+        this.settings.minutes = 0
+      if (this.settings.seconds == null)
+        this.settings.seconds = 0;
+      this.temp_settings.target_duration = this.settings.hours * 3600 + this.settings.minutes * 60 + this.settings.seconds;
     },
-    handle_minute_change() {
-
-    },
-    handle_second_change() {
-
+    handleTimerChange() {
+      if (this.timer_on) {
+        console.log(this.temp_settings.target_duration);
+        this.settings.target_duration = this.temp_settings.target_duration;
+      }
+      else
+        this.settings.target_duration = -1;
     },
     show_error_message(message_output) {
       this.$message({
@@ -329,6 +381,10 @@ export default {
   display: flex;
   justify-content: flex-end;
 
+}
+
+.radio-button {
+  margin-right: 10px;
 }
 
 .box-card {}

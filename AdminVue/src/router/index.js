@@ -105,7 +105,15 @@ export const constantRoutes = [{
           title: '订单列表'
         }
       },
-    ]
+      {
+        path: 'order-checkout',
+        name: 'order-checkout',
+        component: () => import('@/views/order/checkout'),
+        meta: {
+          title: '结账页面'
+        }
+      },
+    ],
   },
   // 房间管理
   {
@@ -149,6 +157,26 @@ export const constantRoutes = [{
       },
     ]
   },
+
+  {
+    path: '/conditioner',
+    component: Layout,
+    // redirect: '/user/upload',
+    meta: {
+      title: '空调管理'
+    },
+
+    children: [{
+      path: 'monitor',
+      name: 'monitor',
+      component: () => import('@/views/conditioner/monitor'),
+      meta: {
+        title: '空调监控'
+      }
+    },
+  ]
+
+  },
   {
     path: '/comment',
     component: Layout,
@@ -166,7 +194,15 @@ export const constantRoutes = [{
     path: '*',
     redirect: '/404',
     hidden: true
-  }
+  },
+  {
+    path: '/specificBill/:userId',
+    name: 'specificBill',
+    component: () => import('@/views/order/specificBill.vue'),
+    meta: {
+      title: ""
+    },
+  },
 ]
 
 const createRouter = () => new Router({
