@@ -24,14 +24,10 @@
             <el-button @click="submitBtn" :type="btnType" class="contactbtn" :disabled="disabled">
               <i :class="iconstyle"></i> {{btnText}}
             </el-button>
-            <el-button @click="back">返回</el-button>
           </div>
         </el-card>
       </el-main>
     </el-container>
-    <el-footer class="footer text-center">
-      <footbar></footbar>
-    </el-footer>
   </div>
 </template>
 

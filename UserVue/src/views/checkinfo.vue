@@ -90,16 +90,10 @@
 							  </p>
 							</el-col>
 						</el-row>
-            <el-button type="info" @click="back" style="font-size: 22px;">
-              <i class="iconfont icon-r-left" style="font-size: 22px;"></i> 返回
-            </el-button>
           </div>
         </el-card>
       </el-main>
     </el-container>
-    <el-footer class="footer text-center">
-      <footbar></footbar>
-    </el-footer>
   </div>
 </template>
 

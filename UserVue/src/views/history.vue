@@ -53,9 +53,6 @@
       </el-row>
 
     </el-main>
-    <el-footer class="footer">
-      <footbar></footbar>
-    </el-footer>
   </el-container>
 </template>
 

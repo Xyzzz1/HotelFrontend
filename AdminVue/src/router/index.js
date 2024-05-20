@@ -123,7 +123,15 @@ export const constantRoutes = [{
     meta: {
       title: '房间管理'
     },
-    children: [{
+    children: [
+      {
+        path: 'room-find',
+        name: 'room-find',
+        component: () => import('@/views/room/findroom'),
+        meta: {
+          title: '房间预定'
+        }
+      },{
         path: 'room-list',
         name: 'room-list',
         component: () => import('@/views/room/roomlist'),

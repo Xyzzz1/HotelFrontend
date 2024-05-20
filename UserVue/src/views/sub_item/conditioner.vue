@@ -1,5 +1,6 @@
 <template>
   <div class="container" style="width: 60%; height: 500px; padding-bottom: 100px; margin: 0 auto;">
+    <div style="height: 100px;"></div>
     <el-row :gutter="20">
       <el-col :span="12">
         <div class="image-container">
@@ -395,7 +396,8 @@ export default {
   transform: scale(0.7, 0.7);
 }
 
-.container {}
+.container {
+}
 
 .font-indoor-temp {
   font-size: 1.5rem;

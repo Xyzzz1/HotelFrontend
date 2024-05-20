@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
-import findroom from "../views/findroom.vue";
+import findroom from "../views/login.vue";
 
 var CtrlSwitch = true;
 
@@ -37,14 +37,6 @@ const routes = [
     meta: {
       title: "酒店客房预订系统-重置密码"
     }
-  },
-  {
-    path: '/findroom',
-    name: 'findroom',
-    component: () => import('@/views/findroom.vue'),
-    meta: {
-      title: "酒店客房预订系统-找房"
-    },
   },
   {
     path: '/reservation',
@@ -103,30 +95,6 @@ const routes = [
     },
   },
   {
-    path: '/history',
-    name: 'history',
-    component: () => import('@/views/history.vue'),
-    meta: {
-      title: "酒店客房预订系统-历史订单"
-    },
-  },
-  {
-    path: '/checkinfo',
-    name: 'checkinfo',
-    component: () => import('@/views/checkinfo.vue'),
-    meta: {
-      title: "酒店客房预订系统-个人信息"
-    },
-  },
-  {
-    path: '/contact',
-    name: 'contact',
-    component: () => import('@/views/contact.vue'),
-    meta: {
-      title: "酒店客房预订系统-联系我们"
-    },
-  },
-  {
     path: '/submitok',
     name: 'submitok',
     component: () => import('@/views/submitok.vue'),
@@ -175,11 +143,43 @@ const routes = [
         },
       },
       {
-        path: '/service/other',
-        name: 'other',
-        component: () => import('@/views/sub_item/other.vue'),
-        meta:{
-          title: "酒店客房服务-其他"
+        path: '/service/checkinfo',
+        name: 'checkinfo',
+        component: () => import('@/views/checkinfo.vue'),
+        meta: {
+          title: "酒店客房预订系统-个人信息"
+        },
+      },
+      {
+        path: '/service/history',
+        name: 'history',
+        component: () => import('@/views/history.vue'),
+        meta: {
+          title: "酒店客房预订系统-历史订单"
+        },
+      },
+      {
+        path: "/service/login",
+        name: "login",
+        component: () => import('@/views/login.vue'),
+        meta: {
+          title: "酒店客房预订系统-登陆"
+        }
+      },
+      {
+        path: "/service/resetpswd",
+        name: "resetpswd",
+        component: () => import('@/views/resetpswd.vue'),
+        meta: {
+          title: "酒店客房预订系统-重置密码"
+        }
+      },
+      {
+        path: '/service/contact',
+        name: 'contact',
+        component: () => import('@/views/contact.vue'),
+        meta: {
+          title: "酒店客房预订系统-联系我们"
         },
       },
     ]

@@ -8,13 +8,14 @@
                     <el-menu-item index="myroom">我的房间</el-menu-item>
                     <el-menu-item index="conditioner">空调遥控</el-menu-item>
                     <el-menu-item index="checkout">我要退房</el-menu-item>
-                    <el-menu-item index="other">other</el-menu-item>
+                    <el-menu-item index="checkinfo">账号信息</el-menu-item>
+                    <el-menu-item index="history">历史订单</el-menu-item>
+                    <el-menu-item index="login">重新登录</el-menu-item>
+                    <el-menu-item index="resetpswd">修改密码</el-menu-item>
+                    <el-menu-item index="contact">联系我们</el-menu-item>
                 </el-menu>
             </el-aside>
             <el-container>
-                <el-header style="background-color: lightblue; color: #fff;">
-                    <router-link to="/findroom" class="home-link">返回主页</router-link>
-                </el-header>
                 <el-main>
                     <router-view></router-view>
                 </el-main>
