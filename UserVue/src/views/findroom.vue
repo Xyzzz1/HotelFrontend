@@ -271,7 +271,7 @@ export default {
 				this.dialogVisible = true;
 				return;
 			}
-			this.axios.post("http://localhost:9151/user/listRoom", {
+			this.axios.post("http://localhost:9151/user/listAllRoom", {
 				"inTime": this.changeTimeStr(this.form.indate),
 				"leaveTime": this.changeTimeStr(this.form.leavedate),
 				"roomType": this.form.selectedType,
@@ -423,10 +423,10 @@ export default {
 		},
 	},
 	mounted() {
-		this.axios.get("http://localhost:9151/user/listAllSpareRoom")
+		this.axios.get("http://localhost:9151/user/listRoom")
 			.then(res => {
 				this.listdata = res.data.data;
-				console.log("get listAllSpareRoom hit");
+				console.log("get listRoom hit");
 				console.log(this.listdata);
 				this.refreshList();
 			})

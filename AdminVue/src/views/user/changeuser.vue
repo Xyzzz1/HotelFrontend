@@ -84,7 +84,7 @@
     components: {},
     methods: {
       changeBtn() {
-        this.axios.post("http://localhost:9151/admin/updateUser", this.change)
+        this.axios.post("http://localhost:9151/reception/updateUser", this.change)
           .then(res => {
             console.log(res);
             this.dialogVisible = true;
@@ -94,7 +94,7 @@
           })
       },
       queryBtn() {
-        this.axios.post("http://localhost:9151/admin/getUserById?userId=" + this.change.id)
+        this.axios.post("http://localhost:9151/reception/getUserById?userId=" + this.change.id)
           .then(res => {
             console.log(res.data.data);
             this.change.createTime = res.data.data.createTime;

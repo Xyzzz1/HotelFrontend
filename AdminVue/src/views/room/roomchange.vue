@@ -170,7 +170,7 @@ export default {
         queryBtn() {
             this.axios
                 .post(
-                    "http://localhost:9151/admin/roomDetail?roomId=" +
+                    "http://localhost:9151/reception/roomDetail?roomId=" +
                         this.change.id
                 )
                 .then((res) => {
@@ -248,7 +248,7 @@ export default {
                 ",早餐:" +
                 this.change.breakfast;
             this.axios
-                .post("http://localhost:9151/admin/updateRoom", this.change)
+                .post("http://localhost:9151/reception/updateRoom", this.change)
                 .then((res) => {
                     if (res.data.code == "200") {
                         this.dialogVisible = true;

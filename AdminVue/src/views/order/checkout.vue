@@ -76,7 +76,7 @@ export default {
     methods: {
         listOrders() {
             this.axios
-                .get("http://localhost:9151/admin/listOrders?orderFlags=1,2,3")
+                .get("http://localhost:9151/reception/listOrders?orderFlags=1,2,3")
                 .then((res) => {
                     console.log(res.data.data);
                     this.tableData = res.data.data;
@@ -112,7 +112,7 @@ export default {
             };
             this.axios
                 .post(
-                    "http://localhost:9151/admin/roomDetail?roomId=" +
+                    "http://localhost:9151/reception/roomDetail?roomId=" +
                     roomID
                 )
                 .then((res) => {
@@ -185,7 +185,7 @@ export default {
     },
     mounted() {
         this.axios
-            .get("http://localhost:9151/admin/listUsers")
+            .get("http://localhost:9151/reception/listUsers")
             .then((res) => {
                 //console.log(res.data.data);
                 this.userData = res.data.data;

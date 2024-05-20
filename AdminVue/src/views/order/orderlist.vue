@@ -67,7 +67,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/admin/handle?orderId=" +
+                            "http://localhost:9151/reception/handle?orderId=" +
                                 orderId
                         )
                         .then((res) => {
@@ -101,7 +101,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/admin/unsubscribe?orderId=" +
+                            "http://localhost:9151/reception/unsubscribe?orderId=" +
                                 orderId
                         )
                         .then((res) => {
@@ -128,7 +128,7 @@ export default {
         },
         listOrders() {
             this.axios
-                .get("http://localhost:9151/admin/listOrders?orderFlags=0")
+                .get("http://localhost:9151/reception/listOrders?orderFlags=0")
                 .then((res) => {
                     console.log(res.data.data);
                     this.tableData = res.data.data;

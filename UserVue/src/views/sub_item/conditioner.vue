@@ -120,7 +120,7 @@ export default {
   beforeMount() {
   },
   mounted() {
-    this.axios.get("http://localhost:9151/service/conditioner/getRoomID")
+    this.axios.get("http://localhost:9151/user/conditioner/getRoomId")
       .then(res => {
         if (res.data.code != '200') {
           this.$message({
@@ -130,7 +130,7 @@ export default {
         } else {
           this.room_id = res.data.data;
           this.createEventSource();
-          this.axios.get("http://localhost:9151/service/conditioner/status?roomId=" +
+          this.axios.get("http://localhost:9151/user/conditioner/status?roomId=" +
             this.room_id
           ).then((res) => {
             if (res.data.code == '200') {
@@ -170,19 +170,13 @@ export default {
           mode: 1
         }
         console.log(json);
-        this.axios.post("http://localhost:9151/service/conditioner/turnOn", json)
+        this.axios.post("http://localhost:9151/user/conditioner/turnOn", json)
           .then((res) => {
-            if (res.data.code == '200') {
-              this.conditioner_state = 1;
-              this.settings.temp = this.temp_settings.temp;
-              this.settings.wind = this.temp_settings.wind;
-            } else {
-              this.conditioner_state = 2;
-            }
+              console.log(res.data);
           });
 
       } else {
-        this.axios.post("http://localhost:9151/service/conditioner/turnOff?roomId=" + this.room_id)
+        this.axios.post("http://localhost:9151/user/conditioner/turnOff?roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               console.log(res.data.data);
@@ -238,7 +232,7 @@ export default {
 
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
-        this.axios.post("http://localhost:9151/service/conditioner/adjustTargetTemperature?targetTemperature=" + this.settings.temp + "&roomId=" + this.room_id)
+        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetTemperature?targetTemperature=" + this.settings.temp + "&roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               this.$message({
@@ -286,7 +280,7 @@ export default {
 
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
-        this.axios.post("http://localhost:9151/service/conditioner/adjustWindSpeed?windSpeed=" + this.settings.wind + "&roomId=" + this.room_id)
+        this.axios.post("http://localhost:9151/user/conditioner/adjustWindSpeed?windSpeed=" + this.settings.wind + "&roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               this.$message({
@@ -306,7 +300,7 @@ export default {
     createEventSource() {
       const that = this;
       if (window.EventSource) {
-        const source = new EventSource("http://localhost:9151/service/conditioner/subscribe?roomId=" + this.room_id);
+        const source = new EventSource("http://localhost:9151/user/conditioner/subscribe?roomId=" + this.room_id);
         source.onopen = (event) => {
           console.log("onopen:" + this.room_id + ": " + event)
         };
@@ -319,7 +313,7 @@ export default {
               this.conditioner_state = 1;
               this.settings.temp = this.temp_settings.temp;
               this.settings.wind = this.temp_settings.wind;
-              }else if(message.reason==-2){
+              }else if(message.reason==-3){
                 this.conditioner_state = 2;
                 this.settings.temp = this.temp_settings.temp;
                 this.settings.wind = this.temp_settings.wind;

@@ -51,7 +51,7 @@ export default {
         },
         async logout() {
             this.axios
-                .get("http://localhost:9151/admin/logout")
+                .get("http://localhost:9151/reception/logout")
                 .then((res) => {
                     localStorage.removeItem("hasLogin");
                     this.$router.push(

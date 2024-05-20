@@ -48,7 +48,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/admin/deleteRoom?roomId=" +
+                            "http://localhost:9151/reception/deleteRoom?roomId=" +
                                 roomId
                         )
                         .then((res) => {
@@ -74,7 +74,7 @@ export default {
         },
         listRooms() {
             this.axios
-                .get("http://localhost:9151/admin/listRooms")
+                .get("http://localhost:9151/reception/listRooms")
                 .then((res) => {
                     // console.log(res.data.data);
                     this.tableData = res.data.data;

@@ -128,7 +128,7 @@ export default {
             this.loading = true;
             // 可自定义登录时的逻辑处理
             this.req({
-                url: "http://localhost:9151/admin/login",
+                url: "http://localhost:9151/reception/login",
                 data: {
                     userName: that.loginForm.username,
                     password: that.loginForm.password,

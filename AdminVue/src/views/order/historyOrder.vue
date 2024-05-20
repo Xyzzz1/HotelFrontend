@@ -39,7 +39,7 @@ export default {
     methods: {
         listOrders() {
             this.axios
-                .get("http://localhost:9151/admin/listOrders?orderFlags=1,2,3")
+                .get("http://localhost:9151/reception/listOrders?orderFlags=1,2,3")
                 .then((res) => {
                     console.log(res.data.data);
                     this.tableData = res.data.data;

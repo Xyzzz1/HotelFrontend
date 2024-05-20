@@ -46,7 +46,7 @@ export default {
     mounted() {
         console.log(this.$route.params.userId); 
         this.axios
-            .get("http://localhost:9151/admin/specificBills?userId="+this.$route.params.userId)
+            .get("http://localhost:9151/reception/specificBills?userId="+this.$route.params.userId)
             .then((res) => {
                 console.log(res);
                 this.tableData = res.data.data;

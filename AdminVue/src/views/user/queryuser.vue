@@ -50,7 +50,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/admin/deleteUser?userId=" +
+                            "http://localhost:9151/reception/deleteUser?userId=" +
                                 id
                         )
                         .then((res) => {
@@ -76,7 +76,7 @@ export default {
         },
         listUser() {
             this.axios
-                .get("http://localhost:9151/admin/listUsers")
+                .get("http://localhost:9151/reception/listUsers")
                 .then((res) => {
                     // console.log(res.data.data);
                     this.tableData = res.data.data;

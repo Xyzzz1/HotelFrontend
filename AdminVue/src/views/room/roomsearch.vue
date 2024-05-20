@@ -81,7 +81,7 @@
     components: {},
     methods: {
       searchBtn() {
-        this.axios.post("http://localhost:9151/admin/roomDetail?roomId=" + this.search.id)
+        this.axios.post("http://localhost:9151/reception/roomDetail?roomId=" + this.search.id)
           .then(res => {
             this.listData = res.data.data;
             this.isRealsearch = true;
