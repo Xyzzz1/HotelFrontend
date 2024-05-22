@@ -30,11 +30,18 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [{
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
+export const constantRoutes = [
+  {
+  path: '/',
+  component: () => import('@/views/login/login'),
+  hidden: true
+},
+
+{
+  path: '/conditioner',
+  name: 'conditioner',
+  component: () => import('@/views/conditioner/monitor'),
+},
 
   {
     path: '/404',
@@ -43,7 +50,7 @@ export const constantRoutes = [{
   },
   //测试页面
   {
-    path: '/',
+    path: '/index',
     component: Layout,
     children: [{
       path: '/',
@@ -89,14 +96,7 @@ export const constantRoutes = [{
     meta: {
       title: '订单管理'
     },
-    children: [{
-        path: 'order-list',
-        name: 'order-list',
-        component: () => import('@/views/order/orderlist'),
-        meta: {
-          title: '等待列表'
-        }
-      },
+    children: [
       {
         path: 'order-reject',
         name: 'order-reject',
@@ -166,25 +166,6 @@ export const constantRoutes = [{
     ]
   },
 
-  {
-    path: '/conditioner',
-    component: Layout,
-    // redirect: '/user/upload',
-    meta: {
-      title: '空调管理'
-    },
-
-    children: [{
-      path: 'monitor',
-      name: 'monitor',
-      component: () => import('@/views/conditioner/monitor'),
-      meta: {
-        title: '空调监控'
-      }
-    },
-  ]
-
-  },
   {
     path: '/comment',
     component: Layout,

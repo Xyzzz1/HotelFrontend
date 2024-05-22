@@ -132,6 +132,11 @@
 					</el-row>
 					<el-form ref="form" :model="form">
 						<el-row>
+							<el-form-item label="用户手机" label-width="100px">
+								<el-input type="text" v-model="form.phone" autocomplete="off" placeholder="手机号码" style="width: 14rem"></el-input>
+							</el-form-item>
+						</el-row>
+						<el-row>
 							<el-form-item label="入住时间" label-width="100px">
 								<el-date-picker type="datetime" placeholder="选择日期" v-model="form.indate"></el-date-picker>
 
@@ -186,6 +191,7 @@ export default {
 			bookDialogVisible: false,
 			sumprice: '',
 			form: {
+				phone: '',
 				indate: '',
 				leavedate: '',
 				currentDate: new Date(),
@@ -309,6 +315,7 @@ export default {
 				return;
 			}
 			let json = {
+				phone: this.form.phone,
 				roomId: this.bookRoom.id,
 				inTime: this.changeTimeStr(this.form.indate),
 				leaveTime: this.changeTimeStr(this.form.leavedate),
@@ -319,18 +326,24 @@ export default {
 			this.axios
 				.post("http://localhost:9151/user/bookRoom", json)
 				.then((res) => {
+					console.log(res);
 					if (res.data.code != "200") {
 						this.$message({
-							message: "请先登录!",
+							message: "用户没有登陆!",
 							type: "error",
 						});
-						this.$router.push("/");
 					} else {
-						this.$router.push("/submitok");
+						this.$message({
+							message: "预定成功!",
+							type: "success",
+						});
 					}
 				})
 				.catch((res) => {
-					this.$router.push("/submitfail");
+					this.$message({
+							message: "预定失败!",
+							type: "success",
+						});
 				});
 			this.form.isNeedInvoice = false;
 		},

@@ -2,6 +2,7 @@
     <div class="user-table">
         <el-table :data="tableData" stripe style="width: 100%">
             <el-table-column prop="roomID" label="房间id"> </el-table-column>
+            <el-table-column prop="userID" label="用户id"> </el-table-column>
             <el-table-column prop="powerOn" label="空调状态"> </el-table-column>
             <el-table-column prop="targetTemperature" label="设定温度"> </el-table-column>
             <el-table-column prop="windSpeed" label="设定风速"> </el-table-column>
@@ -20,6 +21,12 @@
                 </template>
             </el-table-column>
         </el-table>
+        <div style="height: 10px;"></div>
+        <div class="button-container">
+            <el-button type="primary" @click="logout()" style="font-size: 15px;">
+                退出登陆
+            </el-button>
+        </div>
     </div>
 </template>
 
@@ -34,9 +41,59 @@ export default {
 
     methods: {
         powerOn(roomID) {
-
+            let json = {
+                roomID: roomID,
+                userID: null,
+                powerO: true,
+                targetTemperature: 25,
+                windSpeed: 2,
+                additionalFee: 0,
+                targetDuration: -1,
+                requestTime: this.changeTimeStr(new Date().toGMTString()),
+                mode: 1
+            }
+            console.log(json);
+            this.axios.post("http://localhost:9151/user/conditioner/turnOn", json)
+                .then((res) => {
+                    console.log(res.data);
+                });
         },
         powerOff(roomID) {
+            this.axios.post("http://localhost:9151/user/conditioner/turnOff?roomId=" + roomID)
+                .then((res) => {
+                    if (res.data.code == '200') {
+                        console.log(res.data.data);
+                    }
+                    else {
+                        console.log(res.data.data);
+                    }
+                });
+        },
+
+        logout() {
+            this.axios
+                .get("http://localhost:9151/admin/logout")
+                .then((res) => {
+                    this.$router.push(
+                        `/`
+                    );
+                })
+                .catch((res) => {
+                    console.log("err: " + res);
+                });
+        },
+        changeTimeStr(str) {
+            str = str.toString();
+            str = str.replace(/ GMT.+$/, ''); // Or str = str.substring(0, 24)
+            let d = new Date(str);
+            let a = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+            for (var i = 0, len = a.length; i < len; i++) {
+                if (a[i] < 10) {
+                    a[i] = '0' + a[i];
+                }
+            }
+            str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
+            return str;
         },
 
     },
@@ -59,7 +116,7 @@ export default {
                     if (this.tableData[i].mode == 1) {
                         this.tableData[i].mode = "制冷";
                     }
-                    else if(this.tableData[i].mode ==0){
+                    else if (this.tableData[i].mode == 0) {
                         this.tableData[i].mode = "制热";
                     }
                     if (this.tableData[i].powerOn) {
@@ -82,4 +139,14 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.button-container {
+    display: flex;
+    justify-content: center;
+    /* 水平居中 */
+    align-items: center;
+    /* 垂直居中，如果需要 */
+    height: 100%;
+    /* 根据需要调整高度 */
+}
+</style>

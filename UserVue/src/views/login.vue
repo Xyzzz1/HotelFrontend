@@ -10,7 +10,7 @@
                             酒店用户登录
                         </p>
                         <el-form :model="login" status-icon ref="login" label-width="80px">
-                            <el-input type="text" v-model="login.phone" autocomplete="off" placeholder="电话号码"
+                            <el-input type="text" v-model="login.email" autocomplete="off" placeholder="电子邮箱"
                                 style="width: 20rem;height: 3rem;"></el-input>
                             <div style="margin-bottom: 15px;"></div>
                             <el-input type="password" v-model="login.password" autocomplete="off" placeholder="密码"
@@ -41,7 +41,7 @@ export default {
     data() {
         return {
             login: {
-                phone: "",
+                email: "",
                 password: "",
             },
             iconstyle: "iconfont icon-r-right",
@@ -56,11 +56,11 @@ export default {
     methods: {
         loginBtn() {
             if (
-                this.login.phone.trim() == "" ||
+                this.login.email.trim() == "" ||
                 this.login.password.trim() == ""
             ) {
                 this.$message({
-                    message: "账号或密码不能为空",
+                    message: "邮箱或密码不能为空",
                     type: "error",
                 });
                 return;
@@ -70,7 +70,7 @@ export default {
 
             this.axios
                 .post("http://localhost:9151/user/login", {
-                    phone: this.login.phone,
+                    email: this.login.email,
                     password: this.login.password,
                 })
                 .then((res) => {

@@ -28,8 +28,7 @@
       </el-row>
       <el-row>
         <el-col :span="6" class="row-spacing">
-          <p class="font-setting" v-if="settings.temp === 10086">温度：-- ℃</p>
-          <p class="font-setting" v-else>温度：{{ settings.temp }} ℃</p>
+          <p class="font-setting">温度：{{ settings.temp }} ℃</p>
         </el-col>
         <el-col :span="14" class="col-flex">
           <el-button-group>
@@ -59,15 +58,15 @@
           <div class></div>
         </el-col>
         <el-col :span="12">
-          <el-input-number v-model="settings.hours" controls-position="right" @change="handle_time_change" :min=0
-            :max="23" placeholder="小时" class="custom-input"></el-input-number>
-          <el-input-number v-model="settings.minutes" controls-position="right" @change="handle_time_change" :min=0
-            :max="59" placeholder="分钟" class="custom-input"></el-input-number>
-          <el-input-number v-model="settings.seconds" controls-position="right" @change="handle_time_change" :min=0
-            :max="59" placeholder="秒" class="custom-input"></el-input-number>
+          <el-input-number v-model="hours" controls-position="right" @change="handle_time_change" :min=0 :max="23"
+            placeholder="小时" class="custom-input"></el-input-number>
+          <el-input-number v-model="minutes" controls-position="right" @change="handle_time_change" :min=0 :max="59"
+            placeholder="分钟" class="custom-input"></el-input-number>
+          <el-input-number v-model="seconds" controls-position="right" @change="handle_time_change" :min=0 :max="59"
+            placeholder="秒" class="custom-input"></el-input-number>
         </el-col>
         <el-col :span="6" class="col-flex">
-          <el-switch v-model="timer_on" @change="handleTimerChange"></el-switch>
+          <el-switch v-model="settings.timer_on" @change="handleTimerOn"></el-switch>
         </el-col>
       </el-row>
       <el-row>
@@ -75,7 +74,7 @@
           <p class="font-setting">模式</p>
           <div class></div>
         </el-col>
-        <el-radio-group v-model="mode">
+        <el-radio-group v-model="settings.mode" @change="handleModeChange">
           <el-radio :label="1" class="radio-button">制冷</el-radio>
           <el-radio :label="0" class="radio-button">制热</el-radio>
         </el-radio-group>
@@ -92,25 +91,20 @@ export default {
     return {
       room_id: -1,
       power_on: false,
-      timer_on: false,
+      hours: undefined,
+      minutes: undefined,
+      seconds: undefined,
       indoor_temp: "--",
+      min_temp: 18,
+      max_temp: 25,
       conditioner_state: 0,
-      mode: 1,
-      temp_settings: {
-        temp: 10086,
-        wind: -1,
-        target_duration: -1,
-      },
       settings: {
-        temp: 10086,
+        temp: "--",
         wind: 0,
-        hours: undefined,
-        minutes: undefined,
-        seconds: undefined,
+        mode: 1,
         target_duration: -1,
+        timer_on: false,
       },
-
-      temp_timer: null,
     }
   },
   watch: {},
@@ -133,14 +127,29 @@ export default {
           this.axios.get("http://localhost:9151/user/conditioner/status?roomId=" +
             this.room_id
           ).then((res) => {
-            if (res.data.code == '200') {
+            console.log(res.data);
+            if (res.data.code == '200' || res.data.code == '502') {
               this.power_on = true;
-              this.conditioner_state = 1;
-              this.settings.temp = res.data.targetTemperature;
-              this.settings.wind = res.data.currentWindSpeed;
-            } else if (res.data.code == '502') {
-              this.conditioner_state = 2;
-              this.power_on = true
+              this.settings.temp = res.data.data.targetTemperature;
+              this.settings.wind = res.data.data.windSpeed;
+              this.settings.mode = res.data.data.mode;
+              if (res.data.data.targetDuration != -1) {
+                let totalSeconds = res.data.data.targetDuration;
+                this.settings.timer_on = true;
+                this.hours = Math.floor(totalSeconds / 3600);
+                this.minutes = Math.floor((totalSeconds % 3600) / 60);
+                this.seconds = totalSeconds % 60;
+              } else {
+                this.settings.timer_on = false;
+                this.hours = undefined;
+                this.minutes = undefined;
+                this.seconds = undefined;
+
+              }
+              if (res.data.code == '200')
+                this.conditioner_state = 1;
+              else
+                this.conditioner_state = 2;
             }
           })
         }
@@ -156,23 +165,27 @@ export default {
   methods: {
     handle_power_on() {
       if (this.power_on) {
-        this.temp_settings.temp = 25;
-        this.temp_settings.wind = 2;
+        this.settings.temp = 25;
+        this.settings.wind = 2;
+        let duration = -1;
+        if (this.settings.timer_on == true)
+          duration = this.settings.target_duration;
+
         let json = {
           roomID: this.room_id,
           userID: null,
           powerO: true,
-          targetTemperature: this.temp_settings.temp,
-          windSpeed: this.temp_settings.wind,
+          targetTemperature: 25,
+          windSpeed: 2,
           additionalFee: 0,
-          targetDuration: this.settings.target_duration,
+          targetDuration: duration,
           requestTime: this.changeTimeStr(new Date().toGMTString()),
-          mode: 1
+          mode: this.settings.mode
         }
         console.log(json);
         this.axios.post("http://localhost:9151/user/conditioner/turnOn", json)
           .then((res) => {
-              console.log(res.data);
+            console.log(res.data);
           });
 
       } else {
@@ -210,7 +223,7 @@ export default {
         return;
       }
       if (val == '0') {
-        if(this.settings.temp==30){
+        if (this.settings.temp == this.max_temp) {
           this.$message({
             message: '已是最高设定温度',
             type: "error",
@@ -220,7 +233,7 @@ export default {
         this.settings.temp += 1;
 
       } else {
-        if(this.settings.temp==18){
+        if (this.settings.temp == 18) {
           this.$message({
             message: '已是最低设定温度',
             type: "error",
@@ -309,19 +322,16 @@ export default {
           let message = JSON.parse(event.data);
           if (message.controllerType == "status-update") { //处理开关机
             if (message.powerOn) {
-              if(message.reason==-1){
-              this.conditioner_state = 1;
-              this.settings.temp = this.temp_settings.temp;
-              this.settings.wind = this.temp_settings.wind;
-              }else if(message.reason==-3){
+              this.power_on = true;
+              if (message.reason == -1) {
+                this.conditioner_state = 1;
+              } else if (message.reason == -3) {
                 this.conditioner_state = 2;
-                this.settings.temp = this.temp_settings.temp;
-                this.settings.wind = this.temp_settings.wind;
               }
-
             } else {
+              this.power_on = false;
               this.conditioner_state = 0;
-              this.settings.temp = 10086;
+              this.settings.temp = "--";
               this.settings.wind = 0;
 
             }
@@ -341,22 +351,49 @@ export default {
       }
     },
     handle_time_change() {
-      if (this.settings.hours == null)
-        this.settings.hours = 0;
-      if (this.settings.minutes == null)
-        this.settings.minutes = 0
-      if (this.settings.seconds == null)
-        this.settings.seconds = 0;
-      this.temp_settings.target_duration = this.settings.hours * 3600 + this.settings.minutes * 60 + this.settings.seconds;
-    },
-    handleTimerChange() {
-      if (this.timer_on) {
-        console.log(this.temp_settings.target_duration);
-        this.settings.target_duration = this.temp_settings.target_duration;
+      if (this.hours == null)
+        this.hours = 0;
+      if (this.minutes == null)
+        this.minutes = 0
+      if (this.seconds == null)
+        this.seconds = 0;
+      this.settings.target_duration = this.hours * 3600 + this.minutes * 60 + this.seconds;
+      if (this.settings.timer_on && this.power_on) {
+        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetDuration?targetDuration=" + this.settings.target_duration + "&roomId=" + this.room_id)
+          .then((res) => {
+            console.log(res);
+          });
       }
-      else
-        this.settings.target_duration = -1;
     },
+
+
+    handleTimerOn() {
+      if (this.settings.timer_on && this.power_on) {
+        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetDuration?targetDuration=" + this.settings.target_duration + "&roomId=" + this.room_id)
+          .then((res) => {
+            console.log(res);
+          });
+      }
+      else if (this.power_on) {
+        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetDuration?targetDuration=-1&roomId=" + this.room_id)
+          .then((res) => {
+            console.log(res);
+          });
+      }
+    },
+
+
+    handleModeChange() {
+      if (this.mode == 1)
+        this.max_temp = 25;
+      else
+        this.max_temp = 28;
+      this.axios.post("http://localhost:9151/user/conditioner/adjustMode?roomId=" + this.room_id + "&mode=" + this.settings.mode)
+        .then((res) => {
+          console.log(res);
+        });
+    },
+
     show_error_message(message_output) {
       this.$message({
         message: message_output,
@@ -390,8 +427,7 @@ export default {
   transform: scale(0.7, 0.7);
 }
 
-.container {
-}
+.container {}
 
 .font-indoor-temp {
   font-size: 1.5rem;

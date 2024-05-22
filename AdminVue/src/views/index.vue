@@ -12,7 +12,7 @@
       </p>
     </el-col>
     <el-col :span="24" class="text-center" id="homeCol">
-      <img :src="require('@/assets/home.jpg')" style="width: 80%;">
+      <img :src="require('@/assets/home.png')" style="width: 80%;">
     </el-col>
   </el-row>
 </template>

@@ -27,7 +27,7 @@
             <el-table-column prop="flag" label="受理状态"> </el-table-column>
             <el-table-column label="操作" width="150" fixed="right">
                 <template slot-scope="scope">
-                    <el-button type="danger" @click="checkout(scope.row.userId, scope.row.roomId,scope.row.inTime)"
+                    <el-button type="danger" @click="checkout(scope.row.userId, scope.row.roomId, scope.row.inTime)"
                         style="font-size: 15px;">
                         结账</el-button>
                 </template>
@@ -54,8 +54,16 @@
             </el-card>
             <span slot="footer" class="dialog-footer">
                 <div style="display: flex; justify-content: center;">
-                    <el-button type="primary" @click="get_specific_bill">出示详单</el-button>
-                    <el-button type="danger" @click="get_pay">用户缴费</el-button>
+                    <el-button type="danger" @click="get_pay">结账</el-button>
+                </div>
+            </span>
+        </el-dialog>
+
+        <el-dialog title="导出账单或详单？" :visible.sync="billDiolog" width="25%">
+            <span slot="footer" class="dialog-footer">
+                <div style="display: flex; justify-content: center;">
+                    <el-button type="primary" @click="get_specific_bill">导出</el-button>
+                    <el-button type="danger" @click="cancel">取消</el-button>
                 </div>
             </span>
         </el-dialog>
@@ -71,12 +79,13 @@ export default {
             },
             userData: [],
             checkoutDiolog: false,
+            billDiolog: false
         };
     },
     methods: {
         listOrders() {
             this.axios
-                .get("http://localhost:9151/reception/listOrders?orderFlags=1,2,3")
+                .get("http://localhost:9151/reception/listOrders?orderFlags=1,2")
                 .then((res) => {
                     console.log(res.data.data);
                     this.tableData = res.data.data;
@@ -101,7 +110,7 @@ export default {
                     console.log("err: " + res);
                 });
         },
-        checkout(userID, roomID,inTime) {
+        checkout(userID, roomID, inTime) {
             for (var i = 0; i < this.userData.length; i++) {
                 if (this.userData[i].id == userID) {
                     this.orderdata.username = this.userData[i].userName;
@@ -116,14 +125,15 @@ export default {
                     roomID
                 )
                 .then((res) => {
+                    this.orderdata.roomId = res.data.data.room.id;
                     this.orderdata.roomNumber = res.data.data.room.number;
                     this.orderdata.type = res.data.data.type.typeName;
                     this.orderdata.price = res.data.data.type.price;
-                    this.orderdata.inTime=inTime;
-                    this.orderdata.realLeaveTime=this.changeTimeStr(new Date());
-                    this.orderdata.roomPrice = this.calcPrice(inTime, this.orderdata.realLeaveTime,this.orderdata.price);
+                    this.orderdata.inTime = inTime;
+                    this.orderdata.realLeaveTime = this.changeTimeStr(new Date());
+                    this.orderdata.roomPrice = this.calcPrice(inTime, this.orderdata.realLeaveTime, this.orderdata.price);
                     this.orderdata.conditionerPrice = 12.5;
-                    this.orderdata.totalPrice=this.orderdata.roomPrice+this.orderdata.conditionerPrice;
+                    this.orderdata.totalPrice = this.orderdata.roomPrice + this.orderdata.conditionerPrice;
                     this.checkoutDiolog = true;
                 })
                 .catch((res) => {
@@ -134,54 +144,78 @@ export default {
         get_specific_bill() {
             this.$router.push({ path: `/specificBill/${this.orderdata.userID}` });
         },
-        get_pay(){
+        get_pay() {
+            this.axios
+                .post(
+                    "http://localhost:9151/reception/checkOut?roomId=" +
+                    this.orderdata.roomId + "&realPrice=" + this.orderdata.roomPrice
+                )
+                .then((res) => {
+                    if (res.data.code == "200") {
+                        this.$message({
+                            message: "结账成功!",
+                            type: "success",
+                        });
+                    } else {
+                        this.$message({
+                            message: "结账失败!",
+                            type: "error",
+                        });
+                    }
+                });
+            this.checkoutDiolog = false;
+            this.billDiolog = true;
+        },
 
+        cancel() {
+            this.billDiolog = false;
+            window.location.reload();
         },
 
         changeTimeStr(str) {
-			str = str.toString();
-			str = str.replace(/ GMT.+$/, ''); // Or str = str.substring(0, 24)
-			let d = new Date(str);
-			let a = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
-			for (var i = 0, len = a.length; i < len; i++) {
-				if (a[i] < 10) {
-					a[i] = '0' + a[i];
-				}
-			}
-			str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
-			return str;
-		},
-        calcPrice(indate,leavedate,price) {
-			let stra = this.changeTimeStr(leavedate);
-			let sa1 = stra.split(" ")[0].split("-");
-			let sa2 = stra.split(" ")[1].split(":");
-			let leaveTime = new Date();
-			leaveTime.setFullYear(sa1[0], sa1[1], sa1[2]);
-			leaveTime.setHours(sa2[0]);
-			leaveTime.setMinutes(sa2[1]);
-			let strb = this.changeTimeStr(indate);
-            let sumprice=0;
-			if (strb > stra) {
-				sumprice = '--';
-				return;
-			}
-			let sb1 = strb.split(" ")[0].split("-");
-			let sb2 = strb.split(" ")[1].split(":");
-			let inTime = new Date();
-			inTime.setFullYear(sb1[0], sb1[1], sb1[2]);
-			inTime.setHours(sb2[0]);
-			inTime.setMinutes(sb2[1]);
-			let realday = (leaveTime - inTime) / 86400000;
-			// console.log(Math.ceil(realday));
-			realday = Math.ceil(realday);
-			sumprice = price * realday;
-			if (isNaN(sumprice)) {
-				sumprice = '--';
-			}
+            str = str.toString();
+            str = str.replace(/ GMT.+$/, ''); // Or str = str.substring(0, 24)
+            let d = new Date(str);
+            let a = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+            for (var i = 0, len = a.length; i < len; i++) {
+                if (a[i] < 10) {
+                    a[i] = '0' + a[i];
+                }
+            }
+            str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
+            return str;
+        },
+        calcPrice(indate, leavedate, price) {
+            let stra = this.changeTimeStr(leavedate);
+            let sa1 = stra.split(" ")[0].split("-");
+            let sa2 = stra.split(" ")[1].split(":");
+            let leaveTime = new Date();
+            leaveTime.setFullYear(sa1[0], sa1[1], sa1[2]);
+            leaveTime.setHours(sa2[0]);
+            leaveTime.setMinutes(sa2[1]);
+            let strb = this.changeTimeStr(indate);
+            let sumprice = 0;
+            if (strb > stra) {
+                sumprice = '--';
+                return;
+            }
+            let sb1 = strb.split(" ")[0].split("-");
+            let sb2 = strb.split(" ")[1].split(":");
+            let inTime = new Date();
+            inTime.setFullYear(sb1[0], sb1[1], sb1[2]);
+            inTime.setHours(sb2[0]);
+            inTime.setMinutes(sb2[1]);
+            let realday = (leaveTime - inTime) / 86400000;
+            // console.log(Math.ceil(realday));
+            realday = Math.ceil(realday);
+            sumprice = price * realday;
+            if (isNaN(sumprice)) {
+                sumprice = '--';
+            }
             return sumprice;
-			//console.log("单价: " + price + " 时长: " + realday + " 总价: " + this.sumprice);
-			// console.log(this.bookstat.leaveTime,this.bookstat.inTime,this.bookstat.leaveTime - this.bookstat.inTime);
-		},
+            //console.log("单价: " + price + " 时长: " + realday + " 总价: " + this.sumprice);
+            // console.log(this.bookstat.leaveTime,this.bookstat.inTime,this.bookstat.leaveTime - this.bookstat.inTime);
+        },
     },
     mounted() {
         this.axios
@@ -230,8 +264,10 @@ export default {
     font-size: 1.5rem;
     color: #F56C6C;
 }
+
 .info-row {
-  display: flex;
-  align-items: center; /* 使内容垂直居中 */
+    display: flex;
+    align-items: center;
+    /* 使内容垂直居中 */
 }
 </style>

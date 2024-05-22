@@ -9,18 +9,12 @@
         <breadcrumb class="breadcrumb-container" />
 
         <div class="right-menu">
-            <el-avatar
-                shape="square"
-                :size="35"
-                :src="require('@/assets/avatar.jpg')"
-                style="margin: 0 5px -8px 0"
-            ></el-avatar>
             <el-dropdown
 
-                style="cursor: pointer; font-size: 22px; padding-bottom: 15px"
+                style="cursor: pointer; font-size: 15px; padding-bottom: 15px"
             >
                 <span class="el-dropdown-link">
-                    {{adminName}}<i class="el-icon-arrow-down el-icon--right"></i>
+                    酒店前台<i class="el-icon-arrow-down el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="logout"
@@ -55,7 +49,7 @@ export default {
                 .then((res) => {
                     localStorage.removeItem("hasLogin");
                     this.$router.push(
-                        `/login?redirect=${this.$route.fullPath}`
+                        `/`
                     );
                 })
                 .catch((res) => {

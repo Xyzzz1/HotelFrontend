@@ -197,6 +197,7 @@ export default {
 			bookDialogVisible: false,
 			sumprice: '',
 			form: {
+				phone: '',
 				indate: '',
 				leavedate: '',
 				currentDate: new Date(),
