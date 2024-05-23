@@ -128,7 +128,7 @@ export default {
             this.room_id
           ).then((res) => {
             console.log(res.data);
-            if (res.data.code == '200' || res.data.code == '502') {
+            if (res.data.code == '200') {
               this.power_on = true;
               this.settings.temp = res.data.data.targetTemperature;
               this.settings.wind = res.data.data.windSpeed;
@@ -146,7 +146,7 @@ export default {
                 this.seconds = undefined;
 
               }
-              if (res.data.code == '200')
+              if (res.data.data.reason == -1)
                 this.conditioner_state = 1;
               else
                 this.conditioner_state = 2;
@@ -172,9 +172,9 @@ export default {
           duration = this.settings.target_duration;
 
         let json = {
-          roomID: this.room_id,
-          userID: null,
-          powerO: true,
+          roomId: this.room_id,
+          userId: null,
+          on: true,
           targetTemperature: 25,
           windSpeed: 2,
           additionalFee: 0,

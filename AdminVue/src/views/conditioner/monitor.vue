@@ -42,9 +42,9 @@ export default {
     methods: {
         powerOn(roomID) {
             let json = {
-                roomID: roomID,
-                userID: null,
-                powerO: true,
+                roomId: roomID,
+                userId: null,
+                on: true,
                 targetTemperature: 25,
                 windSpeed: 2,
                 additionalFee: 0,
