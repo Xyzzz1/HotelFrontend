@@ -253,30 +253,6 @@ export default {
 
     },
     mounted() {
-        this.axios
-            .get("http://localhost:9151/reception/listUsers")
-            .then((res) => {
-                //console.log(res.data.data);
-                this.userData = res.data.data;
-                for (var i = 0; i < this.userData.length; i++) {
-                    // 性别
-                    if (this.userData[i].sex == 0) {
-                        this.userData[i].sex = "女";
-                    } else if (this.userData[i].sex == 1) {
-                        this.userData[i].sex = "男";
-                    }
-
-                    // 状态
-                    if (this.userData[i].state == 0) {
-                        this.userData[i].state = "游客";
-                    } else if (this.userData[i].state == 1) {
-                        this.userData[i].state = "会员";
-                    }
-                }
-            })
-            .catch((res) => {
-                console.log("err:" + res);
-            });
         this.listOrders();
     }
 
