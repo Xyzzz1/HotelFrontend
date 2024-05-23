@@ -119,6 +119,14 @@ const routes = [
     },
     children:[
       {
+        path: '/service/checkinfo',
+        name: 'checkinfo',
+        component: () => import('@/views/checkinfo.vue'),
+        meta: {
+          title: "酒店客房预订系统-个人信息"
+        },
+      },
+      {
         path: '/service/myroom',
         name: 'myroom',
         component: () => import('@/views/sub_item/myroom.vue'),
@@ -132,22 +140,6 @@ const routes = [
         component: () => import('@/views/sub_item/conditioner.vue'),
         meta:{
           title: "酒店客房服务-空调遥控"
-        },
-      },
-      {
-        path: '/service/checkout',
-        name: 'checkout',
-        component: () => import('@/views/sub_item/checkout.vue'),
-        meta:{
-          title: "酒店客房服务-我要退房"
-        },
-      },
-      {
-        path: '/service/checkinfo',
-        name: 'checkinfo',
-        component: () => import('@/views/checkinfo.vue'),
-        meta: {
-          title: "酒店客房预订系统-个人信息"
         },
       },
       {
