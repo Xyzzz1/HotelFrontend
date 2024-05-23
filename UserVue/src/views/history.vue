@@ -8,9 +8,6 @@
               <el-col :span="18">
                 当前共查找到<span class="order-num">{{length}}</span>条订单
               </el-col>
-              <el-col :span="6" class="text-right">
-                <el-button @click="back" type="text" class="order-back">返回</el-button>
-              </el-col>
             </el-row>
           </el-card>
         </el-col>
@@ -71,9 +68,6 @@
       footbar,
     },
     methods: {
-      back() {
-        this.$router.push("/mine");
-      },
     },
     mounted() {
       this.axios.get("http://localhost:9151/user/historyOrder")
