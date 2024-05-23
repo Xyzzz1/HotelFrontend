@@ -114,8 +114,9 @@ export default {
   beforeMount() {
   },
   mounted() {
-    this.axios.get("http://localhost:9151/user/conditioner/getRoomId")
+    this.axios.get("http://localhost:9151/user/conditioner/getRoomId?userId=")
       .then(res => {
+        console.log(res);
         if (res.data.code != '200') {
           this.$message({
             message: "没有查询到该用户的订房信息！",
@@ -128,7 +129,7 @@ export default {
             this.room_id
           ).then((res) => {
             console.log(res.data);
-            if (res.data.code == '200') {
+            if (res.data.data.powerOn) {
               this.power_on = true;
               this.settings.temp = res.data.data.targetTemperature;
               this.settings.wind = res.data.data.windSpeed;
@@ -150,6 +151,8 @@ export default {
                 this.conditioner_state = 1;
               else
                 this.conditioner_state = 2;
+            }else{
+              this.power_on = false;
             }
           })
         }
@@ -174,7 +177,7 @@ export default {
         let json = {
           roomId: this.room_id,
           userId: null,
-          on: true,
+          powerOn: true,
           targetTemperature: 25,
           windSpeed: 2,
           additionalFee: 0,

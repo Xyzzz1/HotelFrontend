@@ -1,8 +1,8 @@
 <template>
     <div class="user-table">
         <el-table :data="tableData" stripe style="width: 100%">
-            <el-table-column prop="roomID" label="房间id"> </el-table-column>
-            <el-table-column prop="userID" label="用户id"> </el-table-column>
+            <el-table-column prop="roomId" label="房间id"> </el-table-column>
+            <el-table-column prop="userId" label="用户id"> </el-table-column>
             <el-table-column prop="powerOn" label="空调状态"> </el-table-column>
             <el-table-column prop="targetTemperature" label="设定温度"> </el-table-column>
             <el-table-column prop="windSpeed" label="设定风速"> </el-table-column>
@@ -14,9 +14,9 @@
             <el-table-column prop="mode" label="模式"></el-table-column>
             <el-table-column label="操作" width="210" fixed="right">
                 <template slot-scope="scope">
-                    <el-button type="success" @click="powerOn(scope.row.roomID)" style="font-size: 10px;">
+                    <el-button type="success" @click="powerOn(scope.row.roomId)" style="font-size: 10px;">
                         开机</el-button>
-                    <el-button type="danger" @click="powerOff(scope.row.roomID)" style="font-size: 10px;">
+                    <el-button type="danger" @click="powerOff(scope.row.roomId)" style="font-size: 10px;">
                         关机</el-button>
                 </template>
             </el-table-column>
@@ -105,11 +105,7 @@ export default {
             .then((res) => {
                 console.log(res);
                 this.tableData = res.data.data;
-                let isService = true;
                 for (var i = 0; i < this.tableData.length; ++i) {
-                    if (this.tableData[i].roomID == -1) {
-                        isService = false;
-                    }
                     if (this.tableData[i].targetDuration == -1) {
                         this.tableData[i].targetDuration = "未设定";
                     }
@@ -119,14 +115,11 @@ export default {
                     else if (this.tableData[i].mode == 0) {
                         this.tableData[i].mode = "制热";
                     }
-                    if (this.tableData[i].powerOn) {
-                        if (isService)
-                            this.tableData[i].powerOn = "开机";
-                        else
-                            this.tableData[i].powerOn = "等待";
-                    } else {
+                    if (this.tableData[i].powerOn)
+                        this.tableData[i].powerOn = "开机";
+                    else
                         this.tableData[i].powerOn = "关机";
-                    }
+
                 }
                 this.tableData = this.tableData.filter(item => item.roomID !== -1);
             })
