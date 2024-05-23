@@ -14,7 +14,7 @@
             <el-table-column prop="inTime" label="入住时间"> </el-table-column>
             <el-table-column prop="leaveTime" label="预计离店时间">
             </el-table-column>
-            <el-table-column prop="realPrice" label="总计价格">
+            <el-table-column prop="realPrice" label="预计价格">
             </el-table-column>
             <el-table-column prop="realPeople" label="入住人数">
             </el-table-column>
