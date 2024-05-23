@@ -159,11 +159,11 @@ const routes = [
         },
       },
       {
-        path: "/service/login",
+        path: "/service/logout",
         name: "login",
-        component: () => import('@/views/login.vue'),
+        component: () => import('@/views/logout.vue'),
         meta: {
-          title: "酒店客房预订系统-登陆"
+          title: "酒店客房预订系统-登出"
         }
       },
       {
