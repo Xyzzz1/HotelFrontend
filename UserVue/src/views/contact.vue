@@ -7,9 +7,10 @@
           <div class="text item">
             <p class="contact-title">联系我们</p>
             <div class="contact-info text-left">
-              <p class="contact-eng">DaXueCheng Hotel, Inc</p>
-              <p>北京市海淀区颐和园路5号</p>
-              <p>北京大学城星级宾馆</p>
+              <p class="contact-eng">BUPT Cheap Hotel, Inc</p>
+              <p>北京市海淀区西土城路10号</p>
+              <p>BUPT廉价酒店</p>
+              <p>copyright 2024软件工程grp-3</p>
               <p>Tel：010-12345678</p>
               <p>Fax：010-88888889</p>
             </div>

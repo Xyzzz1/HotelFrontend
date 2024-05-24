@@ -8,11 +8,10 @@
         <el-table :data="tableData" stripe style="width: 100%">
             <el-table-column prop="id" label="房间id"> </el-table-column>
             <el-table-column prop="number" label="房间号"> </el-table-column>
-            <el-table-column prop="type" label="房间类型"> </el-table-column>
-            <el-table-column prop="state" label="房间状态"> </el-table-column>
+            <el-table-column prop="type.typeName" label="房间类型"> </el-table-column>
             <el-table-column prop="maxPeople" label="最大容纳人数">
             </el-table-column>
-            <el-table-column prop="introduce" label="客房简介">
+            <el-table-column prop="type.feature" label="客房简介">
             </el-table-column>
             <el-table-column label="操作" width="140" fixed="right" >
                 <template slot-scope="scope">
@@ -74,9 +73,9 @@ export default {
         },
         listRooms() {
             this.axios
-                .get("http://localhost:9151/reception/listRooms")
+                .post("http://localhost:9151/reception/listRoom")
                 .then((res) => {
-                    // console.log(res.data.data);
+                    console.log(res.data.data);
                     this.tableData = res.data.data;
                     for (var i = 0; i < this.tableData.length; ++i) {
                         // 房间状态
@@ -84,25 +83,6 @@ export default {
                             this.tableData[i].state = "空闲";
                         } else if (this.tableData[i].state == 1) {
                             this.tableData[i].state = "已入住";
-                        }
-
-                        // 房间类型
-                        switch (this.tableData[i].type) {
-                            case 1:
-                                this.tableData[i].type = "单人房";
-                                break;
-                            case 2:
-                                this.tableData[i].type = "双人房";
-                                break;
-                            case 3:
-                                this.tableData[i].type = "三人房";
-                                break;
-                            case 4:
-                                this.tableData[i].type = "大床房";
-                                break;
-                            case 5:
-                                this.tableData[i].type = "豪华套房";
-                                break;
                         }
                     }
                 })

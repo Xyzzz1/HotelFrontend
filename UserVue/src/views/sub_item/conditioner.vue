@@ -151,7 +151,7 @@ export default {
                 this.conditioner_state = 1;
               else
                 this.conditioner_state = 2;
-            }else{
+            } else {
               this.power_on = false;
             }
           })
@@ -168,7 +168,10 @@ export default {
   methods: {
     handle_power_on() {
       if (this.power_on) {
-        this.settings.temp = 25;
+        if (this.settings.mode = 1)
+          this.settings.temp = 25;
+        else
+          this.settings.temp = 22;
         this.settings.wind = 2;
         let duration = -1;
         if (this.settings.timer_on == true)
@@ -178,7 +181,7 @@ export default {
           roomId: this.room_id,
           userId: null,
           powerOn: true,
-          targetTemperature: 25,
+          targetTemperature: this.settings.temp,
           windSpeed: 2,
           additionalFee: 0,
           targetDuration: duration,
@@ -388,9 +391,9 @@ export default {
 
     handleModeChange() {
       if (this.mode == 1)
-        this.max_temp = 25;
-      else
         this.max_temp = 28;
+      else
+        this.max_temp = 25;
       this.axios.post("http://localhost:9151/user/conditioner/adjustMode?roomId=" + this.room_id + "&mode=" + this.settings.mode)
         .then((res) => {
           console.log(res);

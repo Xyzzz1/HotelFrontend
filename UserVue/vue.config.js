@@ -1,8 +1,6 @@
-/*
- * @Description: 
- * @Author: Rabbiter
- * @Date: 2023-03-11 13:37:23
- */
+
+const back_end_ip= '172.20.10.3'
+
 module.exports = {
   "publicPath": "./",
   "outputDir": "dist",
@@ -37,17 +35,30 @@ module.exports = {
     "https": false,
     "hotOnly": false,
     "proxy": {
-      "/api": {
-        "target": "http://app.rmsdmedia.com",
+      "/user": {
+        "target": `http://${back_end_ip}:9151/user`,
         "changeOrigin": true,
         "secure": false,
         "pathRewrite": {
           "^/api": ""
         }
       },
-      "/foo": {
-        "target": "<other_url>"
-      }
+      "/admin": {
+        "target": `http://${back_end_ip}:9151/admin`,
+        "changeOrigin": true,
+        "secure": false,
+        "pathRewrite": {
+          "^/api": ""
+        }
+      },
+      "/reception": {
+        "target": `http://${back_end_ip}:9151/reception`,
+        "changeOrigin": true,
+        "secure": false,
+        "pathRewrite": {
+          "^/api": ""
+        }
+      },
     }
   },
   "css": {

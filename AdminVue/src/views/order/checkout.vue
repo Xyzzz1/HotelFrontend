@@ -36,8 +36,7 @@
         <el-dialog title="核对账单" :visible.sync="checkoutDiolog" width="25%">
             <el-card>
                 <div class="text-left">
-                    <p>用户名: {{ orderdata.username }}</p>
-                    <p>手机号码: {{ orderdata.phone }}</p>
+                    <p>用户id: {{ orderdata.userId }}</p>
                     <p>房间号: {{ orderdata.roomNumber }}</p>
                     <p>房间单价: {{ orderdata.price }} 元</p>
                     <p>入住时间: {{ orderdata.inTime }}</p>
@@ -89,7 +88,6 @@ export default {
             this.axios
                 .get("http://localhost:9151/reception/listOrders?orderFlags=1,2")
                 .then((res) => {
-                    console.log(res.data.data);
                     this.tableData = res.data.data;
                     for (var i = 0; i < this.tableData.length; ++i) {
                         switch (this.tableData[i].flag) {
@@ -113,14 +111,7 @@ export default {
                 });
         },
         checkout(userID) {
-            for (var i = 0; i < this.userData.length; i++) {
-                if (this.userData[i].id == userID) {
-                    this.orderdata.username = this.userData[i].userName;
-                    this.orderdata.phone = this.userData[i].phone;
-                    this.orderdata.userID = userID;
-                    break;
-                }
-            };
+            this.orderdata.userId=userID;
             this.axios
                 .post(
                     "http://localhost:9151/reception/generateBill?userId=" +
@@ -144,21 +135,22 @@ export default {
 
         },
         goto_specific_bill() {
-            this.$router.push({ path: `/specificBill/${this.orderdata.userID}` });
+            console.log(this.orderdata.userId)
+            this.$router.push({ path: `/specificBill/${this.orderdata.userId}` });
         },
 
         get_conditioner_excel() {
             this.axios
                 .get(
                     "http://localhost:9151/reception/conditionerBillExcel?userId=" +
-                    this.orderdata.userID, { responseType: 'blob' }
+                    this.orderdata.userId, { responseType: 'blob' }
                 )
                 .then((response) => { 
                     const blob = new Blob([response.data], { type: 'application/vnd.ms-excel; charset=utf-8' });
                     const downloadUrl = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = downloadUrl;
-                    link.download = 'conditionerBill_'+this.orderdata.userID+'.xlsx';
+                    link.download = 'conditionerBill_'+this.orderdata.userId+'.xlsx';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -175,14 +167,14 @@ export default {
             this.axios
                 .get(
                     "http://localhost:9151/reception/billExcel?userId=" +
-                    this.orderdata.userID, { responseType: 'blob' }
+                    this.orderdata.userId, { responseType: 'blob' }
                 )
                 .then((response) => { 
                     const blob = new Blob([response.data], { type: 'application/vnd.ms-excel; charset=utf-8' });
                     const downloadUrl = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = downloadUrl;
-                    link.download = 'bill_'+this.orderdata.userID+'.xlsx';
+                    link.download = 'bill_'+this.orderdata.userId+'.xlsx';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -199,14 +191,14 @@ export default {
             this.axios
                 .get(
                     "http://localhost:9151/reception/specificBillExcel?userId=" +
-                    this.orderdata.userID, { responseType: 'blob' }
+                    this.orderdata.userId, { responseType: 'blob' }
                 )
                 .then((response) => { 
                     const blob = new Blob([response.data], { type: 'application/vnd.ms-excel; charset=utf-8' });
                     const downloadUrl = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = downloadUrl;
-                    link.download = 'specificBill_'+this.orderdata.userID+'.xlsx';
+                    link.download = 'specificBill_'+this.orderdata.userId+'.xlsx';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);

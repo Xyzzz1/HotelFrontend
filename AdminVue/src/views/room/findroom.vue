@@ -81,12 +81,12 @@
 												<p class="room-title">
 													{{ tp.type.typeName }}-{{ tp.number }}
 												</p>
-												<p class="room-intro">{{ tp.introduce }}</p>
+												<p class="room-intro">{{ tp.type.feature }}</p>
 												<p class="room-price">￥{{ tp.type.price }}</p>
-												<p class="room-comment">{{ tp.introduces.面积 }}，可容纳{{ tp.introduces.容纳 }}<br>
-													WIFI: {{ tp.introduces.WIFI }}<br>早餐: {{ tp.introduces.早餐 }}<br>热水:
-													{{ tp.introduces.热水 }}<br>
-													电脑: {{ tp.introduces.电脑 }}<br>电视: {{ tp.introduces.电视 }}</p>
+												<p class="room-comment">{{ tp.introduce.面积 }}，可容纳{{ tp.introduce.容纳 }}<br>
+													WIFI: {{ tp.introduce.WIFI }}<br>早餐: {{ tp.introduce.早餐 }}<br>热水:
+													{{ tp.introduce.热水 }}<br>
+													电脑: {{ tp.introduce.电脑 }}<br>电视: {{ tp.introduce.电视 }}</p>
 											</div>
 										</el-col>
 									</el-row>
@@ -121,12 +121,12 @@
 								<p class="room-title">
 									{{ bookRoom.type.typeName }}-{{ bookRoom.number }}
 								</p>
-								<p class="room-intro">{{ bookRoom.introduce }}</p>
+								<p class="room-intro">{{ bookRoom.type.feature }}</p>
 								<p class="room-price">￥{{ bookRoom.type.price }}</p>
-								<p class="room-comment">{{ bookRoom.introduces.面积 }}，可容纳{{ bookRoom.introduces.容纳 }}<br>
-									WIFI: {{ bookRoom.introduces.WIFI }}<br>早餐: {{ bookRoom.introduces.早餐 }}<br>热水:
-									{{ bookRoom.introduces.热水 }}<br>
-									电脑: {{ bookRoom.introduces.电脑 }}<br>电视: {{ bookRoom.introduces.电视 }}</p>
+								<p class="room-comment">{{ bookRoom.introduce.面积 }}，可容纳{{ bookRoom.introduce.容纳 }}<br>
+									WIFI: {{ bookRoom.introduce.WIFI }}<br>早餐: {{ bookRoom.introduce.早餐 }}<br>热水:
+									{{ bookRoom.introduce.热水 }}<br>
+									电脑: {{ bookRoom.introduce.电脑 }}<br>电视: {{ bookRoom.introduce.电视 }}</p>
 							</div>
 						</el-col>
 					</el-row>
@@ -205,7 +205,7 @@ export default {
 			warning: '',
 			bookRoom: {
 				id: 1,
-				introduces: {
+				introduce: {
 					WIFI: "有",
 					容纳: "2-3人",
 					早餐: "有",
@@ -266,7 +266,7 @@ export default {
 				this.dialogVisible = true;
 				return;
 			}
-			this.axios.post("http://localhost:9151/user/listAllSpareRoom", {
+			this.axios.post("http://localhost:9151/reception/listAllSpareRoom", {
 				"inTime": this.changeTimeStr(this.form.indate),
 				"leaveTime": this.changeTimeStr(this.form.leavedate),
 				"roomType": this.form.selectedType,
@@ -324,7 +324,7 @@ export default {
 			};
 			console.log(json);
 			this.axios
-				.post("http://localhost:9151/user/bookRoom", json)
+				.post("http://localhost:9151/reception/checkIn", json)
 				.then((res) => {
 					console.log(res);
 					if (res.data.code != "200") {
@@ -370,7 +370,6 @@ export default {
 				)
 				.then((res) => {
 					this.roomtype = res.data.data;
-					console.log(this.roomtype);
 				})
 				.catch(() => {
 					console.log("filed get roomtype");
@@ -425,10 +424,9 @@ export default {
 		},
 	},
 	mounted() {
-		this.axios.get("http://localhost:9151/user/listRoom")
+		this.axios.post("http://localhost:9151/reception/listRoom")
 			.then(res => {
-				this.listdata = res.data.data;
-				console.log("get listAllSpareRoom hit");
+				this.listdata = res.data.data;	
 				console.log(this.listdata);
 				this.refreshList();
 			})
@@ -436,15 +434,6 @@ export default {
 				console.log(res);
 			}),
 			this.resolveData();
-		this.axios.get("http://localhost:9151/user/isLoggedIn")
-			.then(res => {
-				if (res.data.code == "200") {
-					this.username = res.data.data;
-					this.isLoggedIn = true;
-				} else {
-					this.isLoggedIn = false;
-				}
-			})
 	}
 }
 </script>

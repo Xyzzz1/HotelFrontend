@@ -8,7 +8,7 @@
   
     <el-col :span="24" class="text-center">
       <p class="title1">
-        欢迎使用酒店管理系统
+        欢迎使用BUPT酒店管理系统
       </p>
     </el-col>
     <el-col :span="24" class="text-center" id="homeCol">

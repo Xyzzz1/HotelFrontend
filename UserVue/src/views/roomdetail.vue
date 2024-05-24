@@ -106,7 +106,7 @@
       this.id = this.$route.query.roomId;
 			if (this.id != undefined) {
 				// console.log(this.id);
-				this.axios.post("http://localhost:9151/user/roomDetail?roomId=" + this.id)
+				this.axios.post("http://localhost:9151/reception/roomDetail?roomId=" + this.id)
 				.then(res => {
 				  this.detaildata = res.data.data;
 				  // console.log(this.detaildata.type.price);

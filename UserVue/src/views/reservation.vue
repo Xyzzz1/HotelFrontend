@@ -126,7 +126,7 @@ export default {
             // console.log(123123);
             this.axios
                 .post(
-                    "http://localhost:9151/user/roomDetail?roomId=" +
+                    "http://localhost:9151/reception/roomDetail?roomId=" +
                     this.bookstat.roomid
                 )
                 .then((res) => {
