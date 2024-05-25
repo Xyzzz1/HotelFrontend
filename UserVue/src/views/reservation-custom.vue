@@ -256,7 +256,7 @@ export default {
                 fapiao: this.fapiao,
             };
             this.axios
-                .post("http://localhost:9151/user/bookRoom", json)
+                .post(process.env.VUE_APP_BASE_URL + "/user/bookRoom", json)
                 .then((res) => {
                     if (res.data.code != "200") {
                         this.$message({
@@ -275,7 +275,7 @@ export default {
         resolveData() {
             // console.log(123123);
             this.axios
-                .get("http://localhost:9151/user/listTypes")
+                .get(process.env.VUE_APP_BASE_URL + "/user/listTypes")
                 .then((res) => {
                     this.roomtype = res.data.data;
                     // console.log(this.roomtype);
@@ -288,7 +288,7 @@ export default {
             this.checkBtnDis = true;
             this.searchicon = "el-icon-loading";
             this.axios
-                .post("http://localhost:9151/user/listRoomsByTypeId", {
+                .post(process.env.VUE_APP_BASE_URL + "/user/listRoomsByTypeId", {
                     typeId: this.resinfo.type,
                     inTime: this.changeTimeStr(this.resinfo.indate),
                     leaveTime: this.changeTimeStr(this.resinfo.leavedate),

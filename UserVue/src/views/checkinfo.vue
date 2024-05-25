@@ -112,8 +112,10 @@ export default {
     footbar,
   },
   mounted() {
+    console.log(process.env.VUE_APP_BASE_URL); 
     this.$store.commit("setMine");
-    this.axios.get("http://localhost:9151/user/getUserInfo")
+    
+    this.axios.get(process.env.VUE_APP_BASE_URL+"/user/getUserInfo")
       .then(res => {
         this.userinfo = res.data.data;
         console.log(this.userinfo);

@@ -29,7 +29,7 @@
 
     },
     mounted() {
-      this.axios.get("http://localhost:9151/reception/listComment")
+      this.axios.get(process.env.VUE_APP_BASE_URL + "/reception/listComment")
       .then(res => {
         this.comment = res.data.data;
         console.log(this.comment);

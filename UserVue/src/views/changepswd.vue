@@ -61,7 +61,7 @@
       changepswdBtn() {
         this.iconstyle = "el-icon-loading";
         this.disabled = true;
-        this.axios.post("http://localhost:9151/user/updatePassword", {
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/updatePassword", {
           "oldPassword": this.changepswd.old,
           "newPassword": this.changepswd.new,
         })

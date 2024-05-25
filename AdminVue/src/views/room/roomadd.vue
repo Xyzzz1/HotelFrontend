@@ -187,7 +187,7 @@ export default {
                 ",早餐:" +
                 this.addnew.breakfast;
             this.axios
-                .post("http://localhost:9151/reception/addRoom", this.addnew)
+                .post(process.env.VUE_APP_BASE_URL + "/reception/addRoom", this.addnew)
                 .then((res) => {
                     if (res.data.code == "200") {
                         this.dialogVisible = true;

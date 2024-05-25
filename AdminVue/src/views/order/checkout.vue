@@ -86,7 +86,7 @@ export default {
     methods: {
         listOrders() {
             this.axios
-                .get("http://localhost:9151/reception/listOrders?orderFlags=1,2")
+                .get(process.env.VUE_APP_BASE_URL + "/reception/listOrders?orderFlags=1,2")
                 .then((res) => {
                     this.tableData = res.data.data;
                     for (var i = 0; i < this.tableData.length; ++i) {
@@ -114,7 +114,7 @@ export default {
             this.orderdata.userId=userID;
             this.axios
                 .post(
-                    "http://localhost:9151/reception/generateBill?userId=" +
+                    process.env.VUE_APP_BASE_URL + "/reception/generateBill?userId=" +
                     userID
                 )
                 .then((res) => {
@@ -142,7 +142,7 @@ export default {
         get_conditioner_excel() {
             this.axios
                 .get(
-                    "http://localhost:9151/reception/conditionerBillExcel?userId=" +
+                    process.env.VUE_APP_BASE_URL + "/reception/conditionerBillExcel?userId=" +
                     this.orderdata.userId, { responseType: 'blob' }
                 )
                 .then((response) => { 
@@ -166,7 +166,7 @@ export default {
         get_bill_excel() {
             this.axios
                 .get(
-                    "http://localhost:9151/reception/billExcel?userId=" +
+                    process.env.VUE_APP_BASE_URL + "/reception/billExcel?userId=" +
                     this.orderdata.userId, { responseType: 'blob' }
                 )
                 .then((response) => { 
@@ -190,7 +190,7 @@ export default {
         get_specific_bill_excel() {
             this.axios
                 .get(
-                    "http://localhost:9151/reception/specificBillExcel?userId=" +
+                    process.env.VUE_APP_BASE_URL + "/reception/specificBillExcel?userId=" +
                     this.orderdata.userId, { responseType: 'blob' }
                 )
                 .then((response) => { 
@@ -216,7 +216,7 @@ export default {
         get_pay() {
             this.axios
                 .post(
-                    "http://localhost:9151/reception/checkOut?roomId=" +
+                    process.env.VUE_APP_BASE_URL + "/reception/checkOut?roomId=" +
                     this.orderdata.roomId
                 )
                 .then((res) => {

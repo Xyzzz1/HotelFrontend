@@ -105,7 +105,7 @@
     },
     methods: {
       searchBtn() {
-        this.axios.post("http://localhost:9151/user/listRoom", {
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/listRoom", {
             "inTime": this.changeTimeStr(this.form.indate),
             "leaveTime": this.changeTimeStr(this.form.leavedate)
           })

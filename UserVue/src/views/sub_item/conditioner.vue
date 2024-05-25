@@ -114,7 +114,7 @@ export default {
   beforeMount() {
   },
   mounted() {
-    this.axios.get("http://localhost:9151/user/conditioner/getRoomId?userId=")
+    this.axios.get(process.env.VUE_APP_BASE_URL + "/user/conditioner/getRoomId?userId=")
       .then(res => {
         console.log(res);
         if (res.data.code != '200') {
@@ -125,7 +125,7 @@ export default {
         } else {
           this.room_id = res.data.data;
           this.createEventSource();
-          this.axios.get("http://localhost:9151/user/conditioner/status?roomId=" +
+          this.axios.get(process.env.VUE_APP_BASE_URL + "/user/conditioner/status?roomId=" +
             this.room_id
           ).then((res) => {
             console.log(res.data);
@@ -189,13 +189,13 @@ export default {
           mode: this.settings.mode
         }
         console.log(json);
-        this.axios.post("http://localhost:9151/user/conditioner/turnOn", json)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/turnOn", json)
           .then((res) => {
             console.log(res.data);
           });
 
       } else {
-        this.axios.post("http://localhost:9151/user/conditioner/turnOff?roomId=" + this.room_id)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/turnOff?roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               console.log(res.data.data);
@@ -251,7 +251,7 @@ export default {
 
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
-        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetTemperature?targetTemperature=" + this.settings.temp + "&roomId=" + this.room_id)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustTargetTemperature?targetTemperature=" + this.settings.temp + "&roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               this.$message({
@@ -299,7 +299,7 @@ export default {
 
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
-        this.axios.post("http://localhost:9151/user/conditioner/adjustWindSpeed?windSpeed=" + this.settings.wind + "&roomId=" + this.room_id)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustWindSpeed?windSpeed=" + this.settings.wind + "&roomId=" + this.room_id)
           .then((res) => {
             if (res.data.code == '200') {
               this.$message({
@@ -319,7 +319,7 @@ export default {
     createEventSource() {
       const that = this;
       if (window.EventSource) {
-        const source = new EventSource("http://localhost:9151/user/conditioner/subscribe?roomId=" + this.room_id);
+        const source = new EventSource(process.env.VUE_APP_BASE_URL + "/user/conditioner/sse/subscribe?roomId=" + this.room_id);
         source.onopen = (event) => {
           console.log("onopen:" + this.room_id + ": " + event)
         };
@@ -365,7 +365,7 @@ export default {
         this.seconds = 0;
       this.settings.target_duration = this.hours * 3600 + this.minutes * 60 + this.seconds;
       if (this.settings.timer_on && this.power_on) {
-        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetDuration?targetDuration=" + this.settings.target_duration + "&roomId=" + this.room_id)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustTargetDuration?targetDuration=" + this.settings.target_duration + "&roomId=" + this.room_id)
           .then((res) => {
             console.log(res);
           });
@@ -375,13 +375,13 @@ export default {
 
     handleTimerOn() {
       if (this.settings.timer_on && this.power_on) {
-        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetDuration?targetDuration=" + this.settings.target_duration + "&roomId=" + this.room_id)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustTargetDuration?targetDuration=" + this.settings.target_duration + "&roomId=" + this.room_id)
           .then((res) => {
             console.log(res);
           });
       }
       else if (this.power_on) {
-        this.axios.post("http://localhost:9151/user/conditioner/adjustTargetDuration?targetDuration=-1&roomId=" + this.room_id)
+        this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustTargetDuration?targetDuration=-1&roomId=" + this.room_id)
           .then((res) => {
             console.log(res);
           });
@@ -394,7 +394,7 @@ export default {
         this.max_temp = 28;
       else
         this.max_temp = 25;
-      this.axios.post("http://localhost:9151/user/conditioner/adjustMode?roomId=" + this.room_id + "&mode=" + this.settings.mode)
+      this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustMode?roomId=" + this.room_id + "&mode=" + this.settings.mode)
         .then((res) => {
           console.log(res);
         });

@@ -70,7 +70,7 @@
     methods: {
     },
     mounted() {
-      this.axios.get("http://localhost:9151/user/historyOrder")
+      this.axios.get(process.env.VUE_APP_BASE_URL + "/user/historyOrder")
         .then(res => {
           // console.log(res.data.data);
           this.orderdata = res.data.data;

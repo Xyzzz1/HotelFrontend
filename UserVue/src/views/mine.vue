@@ -94,7 +94,7 @@
       logoutBtn() {
         this.dialogVisible = false;
         this.$router.push("/findroom");
-        this.axios.get("http://localhost:9151/user/logout")
+        this.axios.get(process.env.VUE_APP_BASE_URL + "/user/logout")
         .then(res => {
           // console.log("成功" + res);
         })
@@ -104,7 +104,7 @@
       },
     },
     mounted() {
-      this.axios.get("http://localhost:9151/user/userDetail")
+      this.axios.get(process.env.VUE_APP_BASE_URL + "/user/userDetail")
       .then(res => {
         this.userdata = res.data.data;
         // console.log(this.userdata);

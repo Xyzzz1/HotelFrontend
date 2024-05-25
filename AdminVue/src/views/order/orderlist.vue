@@ -67,7 +67,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/reception/handle?orderId=" +
+                            process.env.VUE_APP_BASE_URL + "/reception/handle?orderId=" +
                                 orderId
                         )
                         .then((res) => {
@@ -101,7 +101,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/reception/unsubscribe?orderId=" +
+                            process.env.VUE_APP_BASE_URL + "/reception/unsubscribe?orderId=" +
                                 orderId
                         )
                         .then((res) => {
@@ -128,7 +128,7 @@ export default {
         },
         listOrders() {
             this.axios
-                .get("http://localhost:9151/reception/listOrders?orderFlags=0")
+                .get(process.env.VUE_APP_BASE_URL + "/reception/listOrders?orderFlags=0")
                 .then((res) => {
                     console.log(res.data.data);
                     this.tableData = res.data.data;

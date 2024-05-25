@@ -45,7 +45,7 @@ export default {
         },
         async logout() {
             this.axios
-                .get("http://localhost:9151/reception/logout")
+                .get(process.env.VUE_APP_BASE_URL + "/reception/logout")
                 .then((res) => {
                     localStorage.removeItem("hasLogin");
                     this.$router.push(
@@ -62,7 +62,7 @@ export default {
     },
     data() {
       return {
-        adminName: JSON.parse(localStorage.getItem('userInfo')).admin_name
+        //adminName: JSON.parse(localStorage.getItem('userInfo')).admin_name
       }
     }
 };

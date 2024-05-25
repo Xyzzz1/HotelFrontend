@@ -14,7 +14,6 @@ const name = defaultSettings.title || '酒店管理系统' // page title
 // You can change the port by the following methods:
 // port = 9152 npm run dev OR npm run dev --port = 9152
 const port = process.env.port || process.env.npm_config_port || 9152 // dev port
-const back_end_ip= '172.20.10.3'
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -39,30 +38,12 @@ module.exports = {
     },
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      "/user": {
-        "target": `http://${back_end_ip}:9151/user`,
-        "changeOrigin": true,
-        "secure": false,
-        "pathRewrite": {
-          "^/api": ""
+      '/admin': {
+        target: `http://localhost:8886/`,
+        changeOrigin: true,
+        pathRewrite: {
         }
-      },
-      "/admin": {
-        "target": `http://${back_end_ip}:9151/admin`,
-        "changeOrigin": true,
-        "secure": false,
-        "pathRewrite": {
-          "^/api": ""
-        }
-      },
-      "/reception": {
-        "target": `http://${back_end_ip}:9151/reception`,
-        "changeOrigin": true,
-        "secure": false,
-        "pathRewrite": {
-          "^/api": ""
-        }
-      },
+      }
     }
   },
   configureWebpack: {

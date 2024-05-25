@@ -161,7 +161,7 @@ export default {
                     this.iconstyle = "el-icon-loading";
                     this.disabled = true;
                     this.axios
-                        .post("http://localhost:9151/user/register", {
+                        .post(process.env.VUE_APP_BASE_URL + "/user/register", {
                             email: this.register.email,
                             userName: this.register.username,
                             password: this.register.password,

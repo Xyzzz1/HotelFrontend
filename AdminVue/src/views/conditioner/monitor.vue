@@ -53,13 +53,13 @@ export default {
                 mode: 1
             }
             console.log(json);
-            this.axios.post("http://localhost:9151/user/conditioner/turnOn", json)
+            this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/turnOn", json)
                 .then((res) => {
                     console.log(res.data);
                 });
         },
         powerOff(roomID) {
-            this.axios.post("http://localhost:9151/user/conditioner/turnOff?roomId=" + roomID)
+            this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/turnOff?roomId=" + roomID)
                 .then((res) => {
                     if (res.data.code == '200') {
                         console.log(res.data.data);
@@ -72,7 +72,7 @@ export default {
 
         logout() {
             this.axios
-                .get("http://localhost:9151/admin/logout")
+                .get(process.env.VUE_APP_BASE_URL + "/admin/logout")
                 .then((res) => {
                     this.$router.push(
                         `/`
@@ -101,7 +101,7 @@ export default {
     mounted() {
         console.log(this.$route.params.userId);
         this.axios
-            .get("http://localhost:9151/admin/conditioner/listConditionerStatus")
+            .get(process.env.VUE_APP_BASE_URL + "/admin/conditioner/listConditionerStatus")
             .then((res) => {
                 console.log(res);
                 this.tableData = res.data.data;

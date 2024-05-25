@@ -75,7 +75,7 @@ export default {
             this.disabled = true;
 
             this.axios
-                .post("http://localhost:9151/user/resetpswd", {
+                .post(process.env.VUE_APP_BASE_URL + "/user/resetpswd", {
                     phone: this.resetpswd.phone,
                     email: this.resetpswd.email,
                     password: this.resetpswd.password,

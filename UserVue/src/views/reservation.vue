@@ -106,7 +106,7 @@ export default {
             };
             console.log(json);
             this.axios
-                .post("http://localhost:9151/user/bookRoom", json)
+                .post(process.env.VUE_APP_BASE_URL + "/user/bookRoom", json)
                 .then((res) => {
                     if (res.data.code != "200") {
                         this.$message({
@@ -126,7 +126,7 @@ export default {
             // console.log(123123);
             this.axios
                 .post(
-                    "http://localhost:9151/reception/roomDetail?roomId=" +
+                    process.env.VUE_APP_BASE_URL + "/reception/roomDetail?roomId=" +
                     this.bookstat.roomid
                 )
                 .then((res) => {

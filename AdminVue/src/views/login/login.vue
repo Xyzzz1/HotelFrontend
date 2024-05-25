@@ -69,7 +69,7 @@ export default {
                 this.url_type = "admin";
 
             this.axios
-                .post("http://localhost:9151/" + this.url_type + "/login", {
+                .post(process.env.VUE_APP_BASE_URL + "/" + this.url_type + "/login", {
                     email: this.login.email,
                     password: this.login.password,
                 })

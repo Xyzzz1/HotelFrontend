@@ -41,7 +41,7 @@ export default {
 
     mounted() {
         this.axios
-            .get("http://localhost:9151/reception/specificBills?userId="+this.$route.params.userId)
+            .get(process.env.VUE_APP_BASE_URL + "/reception/specificBills?userId="+this.$route.params.userId)
             .then((res) => {
                 console.log(res);
                 this.tableData = res.data.data;

@@ -22,7 +22,7 @@
                     </div>
                     <div class="register">
                         <p>
-                            遇到问题?    
+                            遇到问题?
                             <router-link to="/register" style="color: royalblue;">注册</router-link>
                             或
                             <router-link to="/resetpswd" style="color: royalblue;">重置密码</router-link>
@@ -67,13 +67,13 @@ export default {
             }
             this.iconstyle = "el-icon-loading";
             this.disabled = true;
-
             this.axios
-                .post("http://localhost:9151/user/login", {
+                .post(process.env.VUE_APP_BASE_URL + "/user/login", {
                     email: this.login.email,
                     password: this.login.password,
                 })
                 .then((res) => {
+                    console.log("hit");
                     if (res.data.code == 200) {
                         this.iconstyle = "el-icon-check";
                         this.btnType = "success";
@@ -84,7 +84,7 @@ export default {
                         setTimeout(() => {
                             this.disabled = false;
                             this.$store.commit("setFind");
-                            this.$router.push("/service");
+                            //this.$router.push("/service");
                         }, 1000);
                     } else {
                         this.iconstyle = "el-icon-close";
@@ -146,6 +146,7 @@ export default {
 .text {
     font-size: 14px;
 }
+
 .login-card {
     margin: -7rem 3rem 1rem 3rem;
 }

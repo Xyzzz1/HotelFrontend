@@ -14,7 +14,7 @@ export default {
     methods: {
         logout() {
             this.axios
-                .get("http://localhost:9151/user/logout")
+                .get(process.env.VUE_APP_BASE_URL + "/user/logout")
                 .then((res) => {
                     console.log(res);
                     this.$router.push("/login");

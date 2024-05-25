@@ -47,7 +47,7 @@ export default {
                 .then(() => {
                     this.axios
                         .post(
-                            "http://localhost:9151/reception/deleteRoom?roomId=" +
+                            process.env.VUE_APP_BASE_URL + "/reception/deleteRoom?roomId=" +
                                 roomId
                         )
                         .then((res) => {
@@ -73,7 +73,7 @@ export default {
         },
         listRooms() {
             this.axios
-                .post("http://localhost:9151/reception/listRoom")
+                .post(process.env.VUE_APP_BASE_URL + "/reception/listRoom")
                 .then((res) => {
                     console.log(res.data.data);
                     this.tableData = res.data.data;

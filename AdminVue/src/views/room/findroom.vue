@@ -266,7 +266,7 @@ export default {
 				this.dialogVisible = true;
 				return;
 			}
-			this.axios.post("http://localhost:9151/reception/listAllSpareRoom", {
+			this.axios.post(process.env.VUE_APP_BASE_URL + "/reception/listAllSpareRoom", {
 				"inTime": this.changeTimeStr(this.form.indate),
 				"leaveTime": this.changeTimeStr(this.form.leavedate),
 				"roomType": this.form.selectedType,
@@ -324,7 +324,7 @@ export default {
 			};
 			console.log(json);
 			this.axios
-				.post("http://localhost:9151/reception/checkIn", json)
+				.post(process.env.VUE_APP_BASE_URL + "/reception/checkIn", json)
 				.then((res) => {
 					console.log(res);
 					if (res.data.code != "200") {
@@ -366,7 +366,7 @@ export default {
 		resolveData() {
 			this.axios
 				.get(
-					"http://localhost:9151/user/roomTypes"
+					process.env.VUE_APP_BASE_URL + "/user/roomTypes"
 				)
 				.then((res) => {
 					this.roomtype = res.data.data;
@@ -424,7 +424,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.axios.post("http://localhost:9151/reception/listRoom")
+		this.axios.post(process.env.VUE_APP_BASE_URL + "/reception/listRoom")
 			.then(res => {
 				this.listdata = res.data.data;	
 				console.log(this.listdata);
