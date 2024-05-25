@@ -355,6 +355,7 @@ export default {
       } else {
         alert('你的浏览器不支持SSE')
       }
+  
     },
     handle_time_change() {
       if (this.hours == null)
