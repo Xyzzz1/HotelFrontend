@@ -84,7 +84,7 @@ export default {
                         setTimeout(() => {
                             this.disabled = false;
                             this.$store.commit("setFind");
-                            //this.$router.push("/service");
+                            this.$router.push("/service");
                         }, 1000);
                     } else {
                         this.iconstyle = "el-icon-close";

@@ -9,7 +9,6 @@
                     <el-menu-item index="conditioner">空调遥控</el-menu-item>
                     <el-menu-item index="history">历史订单</el-menu-item>
                     <el-menu-item index="logout">退出登陆</el-menu-item>
-                    <el-menu-item index="login">登陆</el-menu-item>
                     <el-menu-item index="resetpswd">修改密码</el-menu-item>
                     <el-menu-item index="contact">联系我们</el-menu-item>
                 </el-menu>

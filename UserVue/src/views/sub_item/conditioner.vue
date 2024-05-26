@@ -116,7 +116,6 @@ export default {
   mounted() {
     this.axios.get(process.env.VUE_APP_BASE_URL + "/user/conditioner/getRoomId?userId=")
       .then(res => {
-        console.log(res);
         if (res.data.code != '200') {
           this.$message({
             message: "没有查询到该用户的订房信息！",
@@ -128,7 +127,6 @@ export default {
           this.axios.get(process.env.VUE_APP_BASE_URL + "/user/conditioner/status?roomId=" +
             this.room_id
           ).then((res) => {
-            console.log(res.data);
             if (res.data.data.powerOn) {
               this.power_on = true;
               this.settings.temp = res.data.data.targetTemperature;
@@ -168,7 +166,7 @@ export default {
   methods: {
     handle_power_on() {
       if (this.power_on) {
-        if (this.settings.mode = 1)
+        if (this.settings.mode == 1)
           this.settings.temp = 25;
         else
           this.settings.temp = 22;
@@ -216,7 +214,7 @@ export default {
           a[i] = '0' + a[i];
         }
       }
-      str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4];
+      str = a[0] + '-' + a[1] + '-' + a[2] + ' ' + a[3] + ':' + a[4] + ':' + a[5];
       return str;
     },
     handleTemp(val) {
@@ -319,39 +317,40 @@ export default {
     createEventSource() {
       const that = this;
       if (window.EventSource) {
+        //处理开关机
         const source = new EventSource(process.env.VUE_APP_BASE_URL + "/user/conditioner/sse/subscribe?roomId=" + this.room_id);
-        source.onopen = (event) => {
-          console.log("onopen:" + this.room_id + ": " + event)
-        };
-        source.onmessage = (event) => {
-          console.log("收到消息:" + this.room_id + ": " + event.data);
-          let message = JSON.parse(event.data);
-          if (message.controllerType == "status-update") { //处理开关机
-            if (message.powerOn) {
-              this.power_on = true;
-              if (message.reason == -1) {
-                this.conditioner_state = 1;
-              } else if (message.reason == -3) {
-                this.conditioner_state = 2;
-              }
-            } else {
+        source.addEventListener('status-update', event => {
+        //console.log('New TempSSE Data:', event.data);
+          const eventData = JSON.parse(event.data);
+          if (eventData.powerOn) {
+            this.power_on = true;
+            this.conditioner_state = 1;
+          } else {
+            if (eventData.reason == -3) //等待队列
+              this.conditioner_state = 2;
+            else if (eventData.reason != 6 && eventData.reason != -2&& eventData.reason != 7) { //6调节参数，-2心跳，7时间片用尽，不是关机reason
               this.power_on = false;
               this.conditioner_state = 0;
               this.settings.temp = "--";
               this.settings.wind = 0;
-
             }
-          } else if (message.controllerType == "temperature-update") { //处理温度变化
-            this.indoor_temp = message.temperature;
           }
-
-        };
+        });
         source.onerror = (event) => {
           console.log("onerror :" + clientId + ": " + event)
         };
         source.close = (event) => {
           console.log("close :" + this.room_id + ": " + event)
         };
+
+
+        //调节室内温度
+        const source2 = new EventSource(process.env.VUE_APP_BASE_URL + "/user/conditioner/sse/nowTemp?roomId=" + this.room_id);
+        source2.addEventListener('temperature-update', event => {
+          //console.log('New TempSSE Data:', event.data);
+          const eventData2 = JSON.parse(event.data);
+          this.indoor_temp = eventData2.temperature;
+        });
       } else {
         alert('你的浏览器不支持SSE')
       }
@@ -390,10 +389,11 @@ export default {
 
 
     handleModeChange() {
-      if (this.mode == 1)
+      if (this.settings.mode == 1)
         this.max_temp = 28;
       else
         this.max_temp = 25;
+      if(this.power_on)
       this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustMode?roomId=" + this.room_id + "&mode=" + this.settings.mode)
         .then((res) => {
           console.log(res);

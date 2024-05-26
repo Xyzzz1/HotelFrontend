@@ -143,14 +143,6 @@ const routes = [
         },
       },
       {
-        path: "login",
-        name: "login",
-        component: () => import('@/views/login.vue'),
-        meta: {
-          title: "酒店客房预订系统-登录once again"
-        }
-      },
-      {
         path: '/service/history',
         name: 'history',
         component: () => import('@/views/history.vue'),

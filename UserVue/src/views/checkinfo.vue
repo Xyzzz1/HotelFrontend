@@ -115,7 +115,7 @@ export default {
     console.log(process.env.VUE_APP_BASE_URL); 
     this.$store.commit("setMine");
     
-    this.axios.get(process.env.VUE_APP_BASE_URL+"/user/getUserInfo")
+    this.axios.get(process.env.VUE_APP_BASE_URL+"/user/userDetail")
       .then(res => {
         this.userinfo = res.data.data;
         console.log(this.userinfo);
