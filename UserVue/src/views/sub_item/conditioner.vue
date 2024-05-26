@@ -168,7 +168,7 @@ export default {
   methods: {
     handle_power_on() {
       if (this.power_on) {
-        if (this.settings.mode = 1)
+        if (this.settings.mode == 1)
           this.settings.temp = 25;
         else
           this.settings.temp = 22;
@@ -391,10 +391,11 @@ export default {
 
 
     handleModeChange() {
-      if (this.mode == 1)
+      if (this.settings.mode == 1)
         this.max_temp = 28;
       else
         this.max_temp = 25;
+      if(this.power_on)
       this.axios.post(process.env.VUE_APP_BASE_URL + "/user/conditioner/adjustMode?roomId=" + this.room_id + "&mode=" + this.settings.mode)
         .then((res) => {
           console.log(res);
